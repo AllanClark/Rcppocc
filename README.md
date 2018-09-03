@@ -7,6 +7,7 @@ functions.
 The following package can be installed as follows: 
 
 1. Install the 'devtools' package in R or RStudio. 
+   (i.e. install.packages("devtools"))
 2. Now type the following R lines of code in your R workspace: 
 
 require(devtools)
