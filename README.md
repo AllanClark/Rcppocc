@@ -2,7 +2,6 @@
 models as well as a restricted spatial regression (RSRS) occupancy model. 
 It is assumed that the regression effects are modelled using logit link 
 functions.
-*------------------------------------------------------------------------------
 
 The following package can be installed as follows: 
 
@@ -15,6 +14,5 @@ install_github("AllanClark/Rcppocc")
 
 'Rcppocc' should now install.
 
-*------------------------------------------------------------------------------
 
 
