@@ -1,0 +1,6 @@
+useDynLib(Rcppocc)
+exportPattern("^[[:alpha:]]+")
+importFrom(Rcpp, evalCpp)
+
+#added in for RcppParallel!
+importFrom(RcppParallel, RcppParallelLibs)
