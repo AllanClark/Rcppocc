@@ -249,6 +249,13 @@ List logitoccDA4(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector siteids
 
      //now do the sampling here
      for (int isamples=0; isamples<ndraws; isamples++){
+
+          //add in an interuptor. i.e. escape if the user cancels operations
+          //checks every 1000 iterations
+          if (isamples % 1000 == 0) {
+            Rcpp::checkUserInterrupt();
+          }
+
           log_lambda_beta = X*beta;
           lambda_beta =  exp(log_lambda_beta); //#exp(X%*%beta)
 
@@ -591,6 +598,12 @@ List logitoccPG3(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector siteids
      arma::mat tempa;
      for (int isamples=0; isamples<ndraws; isamples++){
 
+          //add in an interuptor. i.e. escape if the user cancels operations
+          //checks every 1000 iterations
+          if (isamples % 1000 == 0) {
+            Rcpp::checkUserInterrupt();
+          }
+
           //Generate the Poly-Gamma variables for beta vector
           X_beta = X*beta; //arma::mat
           //pg_beta = rpg2(X_beta); //arma::vec
@@ -846,6 +859,12 @@ List logitoccSPAT(arma::mat X, arma::mat W_vb, arma::mat Y, arma::mat z, arma::v
      Ks_theta = Ks*theta; //arma::mat
 
      for (int isamples=0; isamples<ndraws; isamples++){
+
+           //add in an interuptor. i.e. escape if the user cancels operations
+           //checks every 1000 iterations
+           if (isamples % 1000 == 0) {
+             Rcpp::checkUserInterrupt();
+           }
 
           //Generate the Poly-Gamma variables for beta vector
           //pg_beta = as<arma::vec>( parallelMatrixRpg(wrap(Xs_beta + Ks_theta)) );
