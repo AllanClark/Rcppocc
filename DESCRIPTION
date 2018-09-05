@@ -13,7 +13,7 @@ Description: The following package allows the user to build various Bayesian
   to undertake all MCMC sampling.
 License: CC0
 Imports: 
-  Rcpp (>= 0.12.11), 
+  Rcpp (>= 0.12.18), 
   RcppParallel, 
   stocc
 LinkingTo: 
