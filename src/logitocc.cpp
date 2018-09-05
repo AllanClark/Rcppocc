@@ -764,7 +764,7 @@ List logitoccSPAT(arma::mat X, arma::mat W_vb, arma::mat Y, arma::mat z, arma::v
      // define some matrices
      arma::mat Xs = X.rows(0, const1);
      arma::mat Xs_t = Xs.t(); //the transpose of the design matrix
-     int n = X.n_rows; //the number of sites (survey + unsurvey)
+     //int n = X.n_rows; //the number of sites (survey + unsurvey)
      int N = W_vb.n_rows; //the total number of visits
 
      arma::mat Ks = K.rows(0, const1);
