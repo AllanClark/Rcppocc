@@ -8,3 +8,4 @@ PKG_CFLAGS = $(SHLIB_OPENMP_CFLAGS)
 
 #added in for RcppParallel!
 PKG_LIBS += $(shell ${R_HOME}/bin/Rscript -e "RcppParallel::RcppParallelLibs()")
+
