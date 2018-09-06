@@ -11,7 +11,7 @@ Description: The following package allows the user to build various Bayesian
   spatial models can be undertaken. We specifically assume that the regression 
   effects all use logit link functions. Gibbs sampling algorithms are developed 
   to undertake all MCMC sampling.
-License: GPL
+License: GPL-3
 Imports: 
   Rcpp (>= 0.12.18), 
   RcppParallel, 
