@@ -21,7 +21,6 @@ using namespace RcppParallel;
 // [[Rcpp::plugins(cpp11)]]
 
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::export]]
 arma::mat mvrnormArma(int n, arma::vec mu, arma::mat sigma) {
      /* Sampling from a Gaussain (mutivariate) distribution
      * output is row vector
@@ -32,7 +31,6 @@ arma::mat mvrnormArma(int n, arma::vec mu, arma::mat sigma) {
 }
 
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::export]]
 arma::mat mvrnormArma2(int n, arma::vec mu, arma::mat sigma) {
      /* Sampling from a Gaussain (mutivariate) distribution
      * output is column vector
@@ -45,7 +43,6 @@ arma::mat mvrnormArma2(int n, arma::vec mu, arma::mat sigma) {
 }
 
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::export]]
 arma::mat mvrnormArma3(int n, arma::vec A, arma::mat invSigma) {
      /* Sampling from a Gaussain (mutivariate) distribution
      * output is column vector
@@ -58,7 +55,6 @@ arma::mat mvrnormArma3(int n, arma::vec A, arma::mat invSigma) {
 }
 
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::export]]
 arma::mat mvrnormArma4(int n, arma::vec A, arma::mat invSigma) {
      /* Sampling from a Gaussain (mutivariate) distribution
      * output is column vector
@@ -74,7 +70,6 @@ arma::mat mvrnormArma4(int n, arma::vec A, arma::mat invSigma) {
 }
 
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::export]]
 double posterior_r3(double x, arma::vec wr, arma::vec sr){
 
      /*sample the components of the linear gaussian distribution
@@ -115,28 +110,24 @@ NumericVector arma2vec(arma::vec x) {
 }
 
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::export]]
 arma::vec invlogit(arma::mat lincomb){
      //inverse logit
      return 1.0/( 1.0 + exp( -lincomb ) );
 }
 
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::export]]
 arma::vec ln_invlogit(arma::mat lincomb){
      //log inverse logit
      return -log( 1 + exp( -lincomb ) );
 }
 
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::export]]
 arma::vec log_not_prob(arma::mat lincomb){
      //log(1-prob(i))
      return -log( 1 + exp( lincomb ) );
 }
 
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::export]]
 List logitoccDA4(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector siteids,
                 int ndraws,
                 arma::vec ysum, arma::vec z,
@@ -407,7 +398,6 @@ List logitoccDA4(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector siteids
 }
 
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::export]]
 arma::vec rpg2(arma::mat scale) {
      /*C++-only interface to PolyaGamma class
      draws random PG variates from arma::vectors of n's and psi's
@@ -447,7 +437,6 @@ double rpg4(double scale) {
 }
 
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::export]]
 arma::vec rpg5(arma::mat scale) {
      /*C++-only interface to PolyaGamma class
      draws random PG variates from arma::vectors of n's and psi's
@@ -493,7 +482,6 @@ struct Rpg : public Worker
      }
 };
 
-// [[Rcpp::export]]
 NumericMatrix parallelMatrixRpg(NumericMatrix x) {
 
      // allocate the output matrix
@@ -510,7 +498,6 @@ NumericMatrix parallelMatrixRpg(NumericMatrix x) {
 }
 
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::export]]
 List logitoccPG3(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector siteids,
                  int ndraws,
                  arma::vec ysum, arma::vec z,
@@ -685,7 +672,6 @@ List logitoccPG3(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector siteids
 }
 
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::export]]
 double rgammadouble(int a, double b, double c)
 {   //from http://iamrandom.com/rgamma-rgammadouble
      Rcpp::NumericVector x = rgamma(a,b,1.0/c);
@@ -693,7 +679,6 @@ double rgammadouble(int a, double b, double c)
 }
 
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::export]]
 double rnormdouble(double b, double c)
 {   //from http://iamrandom.com/rnorm-rnormdouble
      //b = mean; c = sd
@@ -702,7 +687,6 @@ double rnormdouble(double b, double c)
 }
 
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::export]]
 arma::mat quadform(arma::mat X, arma::mat Xt, arma::vec dmat){
      //Calculate the quadratic form X.t()*S*X
      //where S is diagonal with positive elements
@@ -716,7 +700,6 @@ arma::mat quadform(arma::mat X, arma::mat Xt, arma::vec dmat){
 }
 
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::export]]
 arma::mat diagtimesX(arma::mat X, arma::vec dmat){
      //Calculate S*X
      //where S is diagonal with positive elements
@@ -730,7 +713,6 @@ arma::mat diagtimesX(arma::mat X, arma::vec dmat){
 }
 
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::export]]
 List logitoccSPAT(arma::mat X, arma::mat W_vb, arma::mat Y, arma::mat z, arma::vec ysum, arma::vec nvisits,
                   arma::mat K, arma::mat Minv, //arma::mat Mt,
                   double n_obs,
