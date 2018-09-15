@@ -397,34 +397,6 @@ List logitoccDA4(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector siteids
      return List::create(_["alpha"]=post_alpha, _["beta"]=post_beta);
 }
 
-// [[Rcpp::depends("RcppArmadillo")]]
-arma::vec rpg2(arma::mat scale) {
-     /*C++-only interface to PolyaGamma class
-     draws random PG variates from arma::vectors of n's and psi's
-     shape = 1
-     Code adapted from the BayesLogit-master github repository
-
-     YOU NEED THE FOLLOWING FILES IN THE FOLDER: PolyaGamma.h,
-     RcppExports.cpp, RNG.cpp, RNG.h, RRNG.cpp, RRNG.h
-
-     */
-
-     RNG r;
-     PolyaGamma pg;
-#ifdef USE_R
-     GetRNGstate();
-#endif
-     int d = scale.n_elem;
-     colvec result(d);
-     for(int i=0; i<d; i++) {
-          result[i] = pg.draw(1, scale(i), r);
-     }
-#ifdef USE_R
-     PutRNGstate();
-#endif
-     return result;
-}
-
 double rpg4(double scale) {
      //draws 1 PG(1, scale) random variables
      RNG r;
@@ -593,8 +565,8 @@ List logitoccPG3(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector siteids
 
           //Generate the Poly-Gamma variables for beta vector
           X_beta = X*beta; //arma::mat
-          //pg_beta = rpg2(X_beta); //arma::vec
-          pg_beta = as<arma::vec>( parallelMatrixRpg(wrap(X_beta)) ); //bound to be slower!
+          pg_beta = rpg5(X_beta); //arma::vec
+          //pg_beta = as<arma::vec>( parallelMatrixRpg(wrap(X_beta)) ); //bound to be slower!
 
           //Rcpp::Rcout << "is this possible" << as<arma::vec>( parallelMatrixRpg(wrap(X_beta)) ) << std::endl;
 
@@ -624,8 +596,8 @@ List logitoccPG3(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector siteids
           //Generate the Poly-Gamma variables for alpha vector
           W_alpha = W_iter*alpha; // arma::mat
 
-          //pg_alpha = rpg2(W_alpha); //arma::vec
-          pg_alpha = as<arma::vec>( parallelMatrixRpg(wrap(W_alpha)) );
+          pg_alpha = rpg5(W_alpha); //arma::vec
+          //pg_alpha = as<arma::vec>( parallelMatrixRpg(wrap(W_alpha)) );
 
           //posterior samples for alpha
           alpha_cov = inv_sympd( sigma_inv_alpha_p + W_iter.t()*diagmat( pg_alpha )*W_iter );
