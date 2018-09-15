@@ -111,6 +111,46 @@ PGocc4 <- function(formula, design_mats, ndraws=1,
                  percent_burn_in)
 }
 
+#This is the function used for all non-spatial SSO analysis
+PGocc <- function(formula, data_inputs,
+                  ndraws=1,
+                  alpha_m, beta_m,
+                  sigma_inv_alpha_p, sigma_inv_beta_p,
+                  percent_burn_in){
+  #The R function that uses the Polya-Gamma algorithm to fit a Bayesian
+  #single season model
+  #This function does allow the user to specify informative priors for
+  #alpha and beta
+  #samples are outputted as a list
+  #'data_inputs' is a list that contains W, X and y
+  #W = A named list of data.frames of covariates that vary within sites. i.e.
+  #The dataframes are of dimension n (number of sites surveyed) by J where each
+  #row is associated with a site and each column represents a site visit. 'NA'
+  #values should be entered at locations that were not surveyed.
+  #X = A named data.frame that varies at site level.
+  #y = An n by J matrix of the detection, non-detection data, where n is the
+  #number of sites, J is the maximum number of sampling periods per site.
+
+  design_mats <- vb_Designs(W=data_inputs$W, X=data_inputs$X, y=data_inputs$y)
+  req_design_mats <- vb_ReqDesigns(formula, design_mats)
+  W_vb <- req_design_mats$W
+  Y <- matrix(design_mats$Y$V1)
+  X <- req_design_mats$X
+  nvisits <- design_mats$nvisits #nvisits
+
+  y <- design_mats$y
+  siteids <- design_mats$siteids
+
+  ysum <- apply(y,1,sum, na.rm=TRUE) #a vector!
+  z <- design_mats$pres_abs #the inital z vector
+
+  logitoccPG3(X, Y, W_vb, as.matrix(siteids, ncol=1), ndraws, ysum, z,
+              nvisits,
+              alpha_m, beta_m,
+              sigma_inv_alpha_p, sigma_inv_beta_p,
+              percent_burn_in)
+}
+
 #Code for running the Bayesian analysis using jagsUI
 #a simple single season occupancy model
 writeLines("

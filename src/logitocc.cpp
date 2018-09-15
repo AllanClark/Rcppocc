@@ -398,7 +398,7 @@ List logitoccDA4(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector siteids
 }
 
 double rpg4(double scale) {
-     //draws 1 PG(1, scale) random variables
+     //draws 1 PG(1, scale) random variables. here scale is double
      RNG r;
      PolyaGamma pg;
 
@@ -411,10 +411,11 @@ double rpg4(double scale) {
 // [[Rcpp::depends("RcppArmadillo")]]
 arma::vec rpg5(arma::mat scale) {
      /*C++-only interface to PolyaGamma class
-     draws random PG variates from arma::vectors of n's and psi's
+     draws random PG variates from arma::mat
      shape = 1
-     Code adapted from the BayesLogit-master github repository
+     scale is a arma::mat
 
+     Code adapted from the BayesLogit-master github repository
      YOU NEED THE FOLLOWING FILES IN THE FOLDER: PolyaGamma.h,
      RcppExports.cpp, RNG.cpp, RNG.h, RRNG.cpp, RRNG.h
 
@@ -430,9 +431,9 @@ arma::vec rpg5(arma::mat scale) {
 }
 
 /*
- * Attempt to sample PG variables using RcppParallel
- * THIS SHOULD BE RELOOKED!!! NOT IMPLEMENTED AT PRESENT
- */
+ Attempt to sample PG variables using RcppParallel
+ THIS SHOULD BE RELOOKED!!! NOT IMPLEMENTED AT PRESENT
+
 struct Rpg : public Worker
 {
      // source matrix
@@ -467,7 +468,8 @@ NumericMatrix parallelMatrixRpg(NumericMatrix x) {
 
      // return the output matrix
      return output;
-}
+}*/
+
 
 // [[Rcpp::depends("RcppArmadillo")]]
 List logitoccPG3(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector siteids,
@@ -503,7 +505,7 @@ List logitoccPG3(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector siteids
      starts(0) = 1; //might be better to make it start at 0 at a later stage!!!
      arma::vec ends = cumsum(nvisits);
      starts.rows( 1, n-1 ) = ends.rows(0,n-2)+1;
-     /*-----------------------------------------------------------------------*/
+     //-----------------------------------------------------------------------
 
      //set initial values for z_i
      arma::vec psi = z; //set the starting value of psi to z
@@ -513,7 +515,7 @@ List logitoccPG3(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector siteids
 
      //arma::mat sigma_inv_alpha = sigma_inv_alpha_p; //initialize the alpha precision matrix
      //arma::mat sigma_inv_beta = sigma_inv_beta_p; //initialize the beta precision matrix
-     /*-----------------------------------------------------------------------*/
+     //-----------------------------------------------------------------------
 
      //Posterior sampling of beta
      arma::mat X_beta; //X*beta
@@ -522,14 +524,14 @@ List logitoccPG3(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector siteids
      //arma::mat constant_mat1;
      arma::mat beta_cov;
      arma::mat beta_mu;
-     /*-----------------------------------------------------------------------*/
+     //-----------------------------------------------------------------------
 
      //construct the W matrix associated with z=1
      uvec z_equals1_rows;//identify all indices with z==1
      uvec z_equals1_allrows(sum(nvisits)); //used to identify all rows of W_vb where z==1
      arma::mat W_iter;
      arma::mat Y_iter;
-     /*-----------------------------------------------------------------------*/
+     //-----------------------------------------------------------------------
 
      //Posterior sampling of alpha
      arma::mat W_alpha;
@@ -538,13 +540,13 @@ List logitoccPG3(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector siteids
      arma::mat constant_mat2;
      arma::mat alpha_cov;
      arma::mat alpha_mu;
-     /*-----------------------------------------------------------------------*/
+     //-----------------------------------------------------------------------
 
      //update the p, psi and z
      NumericVector zdraw(1);
      arma::vec prob(1);
      arma::vec prod_p_start; arma::vec prod_p_end;
-     /*-----------------------------------------------------------------------*/
+     //-----------------------------------------------------------------------
 
      //arma::mat post(alpha.n_rows + beta.n_rows, floor(ndraws/2)); //place the samples in this matrix
      int isamples_counter;
@@ -567,7 +569,6 @@ List logitoccPG3(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector siteids
           X_beta = X*beta; //arma::mat
           pg_beta = rpg5(X_beta); //arma::vec
           //pg_beta = as<arma::vec>( parallelMatrixRpg(wrap(X_beta)) ); //bound to be slower!
-
           //Rcpp::Rcout << "is this possible" << as<arma::vec>( parallelMatrixRpg(wrap(X_beta)) ) << std::endl;
 
           //posterior samples for beta
@@ -579,7 +580,7 @@ List logitoccPG3(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector siteids
 
           //#posterior sample for the beta vector
           beta = mvrnormArma2(1, beta_mu, beta_cov); //arma::mat
-          /*-----------------------------------------------------------------------*/
+          //-----------------------------------------------------------------------
 
           //construct the W matrix associated with z=1
           z_equals1_rows = find(z==1);  //row number as specified by c++. if an element say 0 ==> row 0 of z is 1.
@@ -591,7 +592,7 @@ List logitoccPG3(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector siteids
           arma::vec convert_z_vec= as<arma::vec>(ind_z);
           W_iter = W_vb.rows( find(convert_z_vec>0) ) ;
           Y_iter = Y.rows( find(convert_z_vec>0) ); //an alternate method of obtaining W_iter and Y_iter
-          /*-----------------------------------------------------------------------*/
+          //-----------------------------------------------------------------------
 
           //Generate the Poly-Gamma variables for alpha vector
           W_alpha = W_iter*alpha; // arma::mat
@@ -603,7 +604,7 @@ List logitoccPG3(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector siteids
           alpha_cov = inv_sympd( sigma_inv_alpha_p + W_iter.t()*diagmat( pg_alpha )*W_iter );
           alpha_mu =  alpha_cov*( W_iter.t()*( Y_iter - 0.5 ) + sigma_inv_alpha_p*alpha_m);
           alpha = mvrnormArma2(1, alpha_mu, alpha_cov);
-          /*-----------------------------------------------------------------------*/
+          //-----------------------------------------------------------------------
 
           //update the p, psi and z
           p = 1/(1+exp(-W_vb*alpha)); //plogis(W_vb*alpha)
@@ -628,7 +629,7 @@ List logitoccPG3(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector siteids
                z(not_observed_index(idown)) = zdraw(0);
           }//finish sampling the z matrix
 
-          /*-----------------------------------------------------------------------*/
+          //-----------------------------------------------------------------------
 
           //store the samples
           isamples_counter = isamples - num_burnin;
@@ -637,7 +638,7 @@ List logitoccPG3(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector siteids
                post_alpha.col(isamples_counter) = alpha;
                post_beta.col(isamples_counter) = beta;
           }
-          /*-----------------------------------------------------------------------*/
+          //-----------------------------------------------------------------------
      }//end of sampling
 
      return List::create(_["alpha"]=post_alpha, _["beta"]=post_beta);
@@ -745,7 +746,7 @@ List logitoccSPAT(arma::mat X, arma::mat W_vb, arma::mat Y, arma::mat z, arma::v
      starts(0) = 1; //might be better to make it start at 0 at a later stage!!!
      arma::vec ends = cumsum(nvisits);
      starts.rows( 1, const1 ) = ends.rows(0, const1-1)+1;
-     /*-----------------------------------------------------------------------*/
+     //-----------------------------------------------------------------------
 
      //Declare parameter vectors
      arma::vec psi = z; //set the starting value of psi to z
@@ -756,7 +757,7 @@ List logitoccSPAT(arma::mat X, arma::mat W_vb, arma::mat Y, arma::mat z, arma::v
      arma::mat beta = beta_m; //initialize the alpha matrix
      mat theta = zeros<mat>(r,1); //initialise the theta matrix to 0's; i.e. no spatial effects initiall
      double tau=tau_0; //initialize tau =1; the spatial precision scalar
-     /*-----------------------------------------------------------------------*/
+     //-----------------------------------------------------------------------
 
      //Posterior sampling of beta
      arma::mat Xs_beta; //Xs*beta
@@ -768,12 +769,12 @@ List logitoccSPAT(arma::mat X, arma::mat W_vb, arma::mat Y, arma::mat z, arma::v
      arma::mat Ks_theta; //Ks*theta
      arma::mat theta_cov;
      //arma::mat theta_mu;
-     /*-----------------------------------------------------------------------*/
+     //-----------------------------------------------------------------------
 
      //Posterior sampling of tau
      mat inv_scale;
      mat tau_mat(1,1);
-     /*-----------------------------------------------------------------------*/
+     //-----------------------------------------------------------------------
 
      //construct the W matrix associated with z=1
      //uvec z_equals1_rows;//identify all indices with z==1
@@ -781,20 +782,20 @@ List logitoccSPAT(arma::mat X, arma::mat W_vb, arma::mat Y, arma::mat z, arma::v
      arma::mat W_iter;
      arma::mat Y_iter;
      //int counter;
-     /*-----------------------------------------------------------------------*/
+     //-----------------------------------------------------------------------
 
      //Posterior sampling of alpha
      arma::mat W_alpha;
      arma::vec pg_alpha; //Polya-Gamma variates used to sample alpha
      arma::mat alpha_cov;
      //arma::mat alpha_mu;
-     /*-----------------------------------------------------------------------*/
+     //-----------------------------------------------------------------------
 
      //update the p, psi and z
      NumericVector zdraw(1);
      arma::vec prob(1);
      arma::vec prod_p_start; arma::vec prod_p_end;
-     /*-----------------------------------------------------------------------*/
+     //-----------------------------------------------------------------------
 
      //The outputs
      int isamples_counter;
@@ -806,7 +807,7 @@ List logitoccSPAT(arma::mat X, arma::mat W_vb, arma::mat Y, arma::mat z, arma::v
      arma::mat post_tau(1, num_samples_kept);
      arma::mat post_z(z.n_rows, num_samples_kept);
      arma::mat post_psi(z.n_rows, num_samples_kept);
-     /*-----------------------------------------------------------------------*/
+     //-----------------------------------------------------------------------
 
      //now do the sampling here
      Xs_beta = Xs*beta; //arma::mat
@@ -823,21 +824,21 @@ List logitoccSPAT(arma::mat X, arma::mat W_vb, arma::mat Y, arma::mat z, arma::v
           //Generate the Poly-Gamma variables for beta vector
           //pg_beta = as<arma::vec>( parallelMatrixRpg(wrap(Xs_beta + Ks_theta)) );
           pg_beta = rpg5(Xs_beta + Ks_theta);
-          /*-----------------------------------------------------------------------*/
+           //-----------------------------------------------------------------------
 
           //posterior samples for beta
           beta_cov = inv_sympd( sigma_inv_beta_p + Xs_t*diagmat( pg_beta )*Xs ); //arma::mat
           beta = mvnrnd(beta_cov*( Xs_t*( z.rows(0,n_obs-1) - 0.5 - diagmat( pg_beta )*( Ks_theta) ) + const2), beta_cov, 1);
           //beta = mvrnormArma2(1, beta_cov*( Xs_t*( z.rows(0,n_obs-1) - 0.5 - diagmat( pg_beta )*( Ks_theta) ) + const2), beta_cov);
           Xs_beta = Xs*beta; //arma::mat
-          /*----------------------------------------------------------------------*/
+          //-----------------------------------------------------------------------
 
           //posterior samples for theta
           theta_cov = inv_sympd( tau*Minv + Ks_t*diagmat( pg_beta )*Ks );
           theta = mvnrnd(theta_cov*Ks_t*( z.rows(0, const1) - 0.5 - diagmat( pg_beta )*( Xs_beta  ) ), theta_cov, 1);
           //theta = mvrnormArma2(1, theta_cov*Ks_t*( z.rows(0, const1) - 0.5 - diagmat( pg_beta )*( Xs_beta  ) ), theta_cov);
           Ks_theta = Ks*theta; //arma::mat
-          /*-----------------------------------------------------------------------*/
+          //-----------------------------------------------------------------------
 
           //posterior samples for tau
           /*inv_scale =  theta.t()*Minv*theta *0.5 + b_tau ;
@@ -847,7 +848,7 @@ List logitoccSPAT(arma::mat X, arma::mat W_vb, arma::mat Y, arma::mat z, arma::v
           inv_scale =  theta.t()*Minv*theta*0.5 + b_tau ; //not inverse scale. rgammadouble uses 1/inv_scale = 1/( theta.t()*Minv*theta *0.5 + i2 );
           tau = rgammadouble(1, a_tau + 0.5*r, inv_scale(0) );
           tau_mat(0,0) = tau;
-          /*-----------------------------------------------------------------------*/
+          //-----------------------------------------------------------------------
 
           //convert arma::vec z to NumericVector zNM (but only for surveyed locations)
           NumericVector z_NM = wrap(z.rows(0, const1));
@@ -856,7 +857,7 @@ List logitoccSPAT(arma::mat X, arma::mat W_vb, arma::mat Y, arma::mat z, arma::v
           arma::vec convert_z_vec= as<arma::vec>(ind_z);
           W_iter = W_vb.rows( find(convert_z_vec>0) ) ;
           Y_iter = Y.rows( find(convert_z_vec>0) );
-          /*-----------------------------------------------------------------------*/
+          //-----------------------------------------------------------------------
 
           //Generate the Poly-Gamma variables for alpha vector
           W_alpha = W_iter*alpha; // arma::mat
@@ -867,7 +868,7 @@ List logitoccSPAT(arma::mat X, arma::mat W_vb, arma::mat Y, arma::mat z, arma::v
           alpha_cov = inv_sympd( sigma_inv_alpha_p + W_iter.t()*diagmat( pg_alpha )*W_iter );
           alpha = mvnrnd(alpha_cov*( W_iter.t()*( Y_iter - 0.5 ) + const3), alpha_cov, 1);
           //alpha = mvrnormArma2(1, alpha_cov*( W_iter.t()*( Y_iter - 0.5 ) + const3), alpha_cov);
-          /*-----------------------------------------------------------------------*/
+          //-----------------------------------------------------------------------
 
           //update the p, psi and z
           p = 1/(1 + exp(-W_vb*alpha)); //plogis(W_vb*alpha)
@@ -912,7 +913,7 @@ List logitoccSPAT(arma::mat X, arma::mat W_vb, arma::mat Y, arma::mat z, arma::v
           }//finish sampling the z matrix
            */
 
-          /*-----------------------------------------------------------------------*/
+          //-----------------------------------------------------------------------
 
           //store the samples
           isamples_counter = isamples - num_burnin;
