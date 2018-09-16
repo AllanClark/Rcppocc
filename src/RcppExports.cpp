@@ -6,3 +6,90 @@
 
 using namespace Rcpp;
 
+// logitoccDA4
+List logitoccDA4(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector siteids, int ndraws, arma::vec ysum, arma::vec z, arma::vec nvisits, arma::mat alpha_m, arma::mat beta_m, arma::mat sigma_inv_alpha_p, arma::mat sigma_inv_beta_p);
+RcppExport SEXP _Rcppocc_logitoccDA4(SEXP XSEXP, SEXP YSEXP, SEXP W_vbSEXP, SEXP siteidsSEXP, SEXP ndrawsSEXP, SEXP ysumSEXP, SEXP zSEXP, SEXP nvisitsSEXP, SEXP alpha_mSEXP, SEXP beta_mSEXP, SEXP sigma_inv_alpha_pSEXP, SEXP sigma_inv_beta_pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type W_vb(W_vbSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type siteids(siteidsSEXP);
+    Rcpp::traits::input_parameter< int >::type ndraws(ndrawsSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type ysum(ysumSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type z(zSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type nvisits(nvisitsSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type alpha_m(alpha_mSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type beta_m(beta_mSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type sigma_inv_alpha_p(sigma_inv_alpha_pSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type sigma_inv_beta_p(sigma_inv_beta_pSEXP);
+    rcpp_result_gen = Rcpp::wrap(logitoccDA4(X, Y, W_vb, siteids, ndraws, ysum, z, nvisits, alpha_m, beta_m, sigma_inv_alpha_p, sigma_inv_beta_p));
+    return rcpp_result_gen;
+END_RCPP
+}
+// logitoccPG3
+List logitoccPG3(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector siteids, int ndraws, arma::vec ysum, arma::vec z, arma::vec nvisits, arma::mat alpha_m, arma::mat beta_m, arma::mat sigma_inv_alpha_p, arma::mat sigma_inv_beta_p, double percent_burn_in);
+RcppExport SEXP _Rcppocc_logitoccPG3(SEXP XSEXP, SEXP YSEXP, SEXP W_vbSEXP, SEXP siteidsSEXP, SEXP ndrawsSEXP, SEXP ysumSEXP, SEXP zSEXP, SEXP nvisitsSEXP, SEXP alpha_mSEXP, SEXP beta_mSEXP, SEXP sigma_inv_alpha_pSEXP, SEXP sigma_inv_beta_pSEXP, SEXP percent_burn_inSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type W_vb(W_vbSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type siteids(siteidsSEXP);
+    Rcpp::traits::input_parameter< int >::type ndraws(ndrawsSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type ysum(ysumSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type z(zSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type nvisits(nvisitsSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type alpha_m(alpha_mSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type beta_m(beta_mSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type sigma_inv_alpha_p(sigma_inv_alpha_pSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type sigma_inv_beta_p(sigma_inv_beta_pSEXP);
+    Rcpp::traits::input_parameter< double >::type percent_burn_in(percent_burn_inSEXP);
+    rcpp_result_gen = Rcpp::wrap(logitoccPG3(X, Y, W_vb, siteids, ndraws, ysum, z, nvisits, alpha_m, beta_m, sigma_inv_alpha_p, sigma_inv_beta_p, percent_burn_in));
+    return rcpp_result_gen;
+END_RCPP
+}
+// logitoccSPAT
+List logitoccSPAT(arma::mat X, arma::mat W_vb, arma::mat Y, arma::mat z, arma::vec ysum, arma::vec nvisits, arma::mat K, arma::mat Minv, double n_obs, NumericVector siteids, arma::vec unsurveyed_ind, double tau_0, double a_tau, double b_tau, arma::mat alpha_m, arma::mat beta_m, arma::mat sigma_inv_alpha_p, arma::mat sigma_inv_beta_p, int ndraws, double percent_burn_in);
+RcppExport SEXP _Rcppocc_logitoccSPAT(SEXP XSEXP, SEXP W_vbSEXP, SEXP YSEXP, SEXP zSEXP, SEXP ysumSEXP, SEXP nvisitsSEXP, SEXP KSEXP, SEXP MinvSEXP, SEXP n_obsSEXP, SEXP siteidsSEXP, SEXP unsurveyed_indSEXP, SEXP tau_0SEXP, SEXP a_tauSEXP, SEXP b_tauSEXP, SEXP alpha_mSEXP, SEXP beta_mSEXP, SEXP sigma_inv_alpha_pSEXP, SEXP sigma_inv_beta_pSEXP, SEXP ndrawsSEXP, SEXP percent_burn_inSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type W_vb(W_vbSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type z(zSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type ysum(ysumSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type nvisits(nvisitsSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type K(KSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type Minv(MinvSEXP);
+    Rcpp::traits::input_parameter< double >::type n_obs(n_obsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type siteids(siteidsSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type unsurveyed_ind(unsurveyed_indSEXP);
+    Rcpp::traits::input_parameter< double >::type tau_0(tau_0SEXP);
+    Rcpp::traits::input_parameter< double >::type a_tau(a_tauSEXP);
+    Rcpp::traits::input_parameter< double >::type b_tau(b_tauSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type alpha_m(alpha_mSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type beta_m(beta_mSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type sigma_inv_alpha_p(sigma_inv_alpha_pSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type sigma_inv_beta_p(sigma_inv_beta_pSEXP);
+    Rcpp::traits::input_parameter< int >::type ndraws(ndrawsSEXP);
+    Rcpp::traits::input_parameter< double >::type percent_burn_in(percent_burn_inSEXP);
+    rcpp_result_gen = Rcpp::wrap(logitoccSPAT(X, W_vb, Y, z, ysum, nvisits, K, Minv, n_obs, siteids, unsurveyed_ind, tau_0, a_tau, b_tau, alpha_m, beta_m, sigma_inv_alpha_p, sigma_inv_beta_p, ndraws, percent_burn_in));
+    return rcpp_result_gen;
+END_RCPP
+}
+
+static const R_CallMethodDef CallEntries[] = {
+    {"_Rcppocc_logitoccDA4", (DL_FUNC) &_Rcppocc_logitoccDA4, 12},
+    {"_Rcppocc_logitoccPG3", (DL_FUNC) &_Rcppocc_logitoccPG3, 13},
+    {"_Rcppocc_logitoccSPAT", (DL_FUNC) &_Rcppocc_logitoccSPAT, 20},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_Rcppocc(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
+}
