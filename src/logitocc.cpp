@@ -128,6 +128,7 @@ arma::vec log_not_prob(arma::mat lincomb){
 }
 
 // [[Rcpp::depends("RcppArmadillo")]]
+// [[Rcpp::export]]
 List logitoccDA4(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector siteids,
                 int ndraws,
                 arma::vec ysum, arma::vec z,
@@ -472,6 +473,7 @@ NumericMatrix parallelMatrixRpg(NumericMatrix x) {
 
 
 // [[Rcpp::depends("RcppArmadillo")]]
+// [[Rcpp::export]]
 List logitoccPG3(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector siteids,
                  int ndraws,
                  arma::vec ysum, arma::vec z,
@@ -686,6 +688,7 @@ arma::mat diagtimesX(arma::mat X, arma::vec dmat){
 }
 
 // [[Rcpp::depends("RcppArmadillo")]]
+// [[Rcpp::export]]
 List logitoccSPAT(arma::mat X, arma::mat W_vb, arma::mat Y, arma::mat z, arma::vec ysum, arma::vec nvisits,
                   arma::mat K, arma::mat Minv, //arma::mat Mt,
                   double n_obs,
