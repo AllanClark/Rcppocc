@@ -15,6 +15,8 @@ install_github("AllanClark/Rcppocc")
 
 'Rcppocc' should now install.
 
+Ensure that the latest version of the 'stocc' package is also installed. You might also have to update your version of R so that it is compatible with 'stocc'. 
+
 
 A quick note on exiting 'Rcppocc':
 ----------------------------------
