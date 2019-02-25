@@ -1,5 +1,5 @@
 'Rcppocc' is a package that can be used to fit single-season Bayesian occupancy 
-models as well as a restricted spatial regression (RSRS) occupancy model. 
+models as well as a restricted spatial regression (RSR) occupancy model. 
 It is assumed that the regression effects are modelled using logit link 
 functions.
 
