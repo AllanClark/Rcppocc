@@ -23,3 +23,7 @@ LinkingTo:
 SystemRequirements: GNU make
 RoxygenNote: 6.1.0
 LazyData: true
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

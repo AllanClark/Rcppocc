@@ -57,7 +57,10 @@ vb_Designs<-function(W, X, y){
           pres_abs=pres_abs, siteids=siteids, y=y)
 }
 
-dRUMocc <- function(formula, design_mats, ndraws=1, alpha_m, beta_m, sigma_inv_alpha_p, sigma_inv_beta_p){
+dRUMocc <- function(formula, design_mats,
+                    ndraws=1,
+                    alpha_m, beta_m,
+                    sigma_inv_alpha_p, sigma_inv_beta_p){
     #The R function that uses the dRUM algorithm to fit a Bayesian
     #single season model
     #This function does not allow the user to specify informative
