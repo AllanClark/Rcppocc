@@ -647,6 +647,194 @@ List logitoccPG3(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector siteids
 }
 
 // [[Rcpp::depends("RcppArmadillo")]]
+// [[Rcpp::export]]
+List logitoccPG3_z(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector siteids,
+                 int ndraws,
+                 arma::vec ysum, arma::vec z,
+                 arma::vec nvisits,
+                 arma::mat alpha_m, arma::mat beta_m,
+                 arma::mat sigma_inv_alpha_p, arma::mat sigma_inv_beta_p,
+                 double percent_burn_in){
+
+  /*-----------------------------------------------------------------------
+  * The following function uses the POLYA-GAMMA formulation to fit a single season
+  * site occupancy model using Gibbs sampling
+  * X = design matrix associated with occupancy process
+  * y = observed data
+  * W_vb = the design matrix associated with detection process
+  * ndraws = number of MCMC iterations
+  * Called by the R function, PGocc4
+  *-----------------------------------------------------------------------*/
+
+  arma::mat X_t = X.t(); //the transpose of the design matrix
+  int n = X.n_rows; //the number of sites
+  int N = W_vb.n_rows; //the total number of visits
+
+  NumericVector siteindex(n); //siteindex = 1, 2, ..., n
+  for (int idown =0; idown<n; idown++){siteindex(idown) = idown+1;}
+
+  uvec observed_index = find(ysum>0); //identify the indices associated with sites where species was seen
+  uvec not_observed_index = find(ysum==0); //identify the indices associated with sites where species was not seen
+
+  //construct a matrix with the start and end for each site
+  arma::vec starts(n);
+  starts(0) = 1; //might be better to make it start at 0 at a later stage!!!
+  arma::vec ends = cumsum(nvisits);
+  starts.rows( 1, n-1 ) = ends.rows(0,n-2)+1;
+  //-----------------------------------------------------------------------
+
+  //set initial values for z_i
+  arma::vec psi = z; //set the starting value of psi to z
+  arma::mat p = zeros<arma::mat>(N, 1); //initialize p to contain 0's
+  arma::mat alpha = alpha_m; //initialize the alpha matrix
+  arma::mat beta = beta_m; //initialize the beta matrix
+
+  //arma::mat sigma_inv_alpha = sigma_inv_alpha_p; //initialize the alpha precision matrix
+  //arma::mat sigma_inv_beta = sigma_inv_beta_p; //initialize the beta precision matrix
+  //-----------------------------------------------------------------------
+
+  //Posterior sampling of beta
+  arma::mat X_beta; //X*beta
+  arma::vec pg_beta; //Polya-Gamma variates used to sample beta
+  arma::mat diag_pg_beta;
+  //arma::mat constant_mat1;
+  arma::mat beta_cov;
+  arma::mat beta_mu;
+  //-----------------------------------------------------------------------
+
+  //construct the W matrix associated with z=1
+  uvec z_equals1_rows;//identify all indices with z==1
+  uvec z_equals1_allrows(sum(nvisits)); //used to identify all rows of W_vb where z==1
+  arma::mat W_iter;
+  arma::mat Y_iter;
+  //-----------------------------------------------------------------------
+
+  //Posterior sampling of alpha
+  arma::mat W_alpha;
+  arma::vec pg_alpha; //Polya-Gamma variates used to sample alpha
+  arma::mat diag_pg_alpha;
+  arma::mat constant_mat2;
+  arma::mat alpha_cov;
+  arma::mat alpha_mu;
+  //-----------------------------------------------------------------------
+
+  //update the p, psi and z
+  NumericVector zdraw(1);
+  arma::vec prob(1);
+  arma::vec prod_p_start; arma::vec prod_p_end;
+  //-----------------------------------------------------------------------
+
+  //arma::mat post(alpha.n_rows + beta.n_rows, floor(ndraws/2)); //place the samples in this matrix
+  int isamples_counter;
+  int num_burnin = floor(ndraws*percent_burn_in);
+  int num_samples_kept = ndraws - num_burnin;
+  arma::mat post_alpha(alpha.n_rows , num_samples_kept); //place the samples in this matrix
+  arma::mat post_beta(beta.n_rows, num_samples_kept); //place the samples in this matrix
+  arma::mat post_z(z.n_rows, num_samples_kept); //place the samples in this matrix
+
+  //Rcout << "\n Before sampling" << std::endl;
+
+  //now do the sampling here
+  arma::mat tempa;
+  for (int isamples=0; isamples<ndraws; isamples++){
+
+    //add in an interuptor. i.e. escape if the user cancels operations
+    //checks every 1000 iterations
+    if (isamples % 1000 == 0) {
+      Rcpp::checkUserInterrupt();
+    }
+
+    //Generate the Poly-Gamma variables for beta vector
+    X_beta = X*beta; //arma::mat
+    pg_beta = rpg5(X_beta); //arma::vec
+    //pg_beta = as<arma::vec>( parallelMatrixRpg(wrap(X_beta)) ); //bound to be slower!
+    //Rcpp::Rcout << "is this possible" << as<arma::vec>( parallelMatrixRpg(wrap(X_beta)) ) << std::endl;
+
+    //posterior samples for beta
+    //diag_pg_beta = diagmat( pg_beta ); //creates a diagonal matrix!
+    //constant_mat1 = X_t*diag_pg_beta; //arma::mat
+    //beta_cov = inv_sympd( sigma_inv_beta_p + X_t*diag_pg_beta*X ); //arma::mat
+    beta_cov = inv_sympd( sigma_inv_beta_p + X_t*diagmat( pg_beta )*X ); //arma::mat
+    beta_mu =  beta_cov*(X.t()*( z - 0.5 ) + sigma_inv_beta_p*beta_m); // arma::mat
+
+    //#posterior sample for the beta vector
+    beta = mvrnormArma2(1, beta_mu, beta_cov); //arma::mat
+  //Rcout << "\n beta" << std::endl;
+    //-----------------------------------------------------------------------
+
+    //construct the W matrix associated with z=1
+    z_equals1_rows = find(z==1);  //row number as specified by c++. if an element say 0 ==> row 0 of z is 1.
+
+    //convert arma::vec z to NumericVector zNM
+    NumericVector z_NM = wrap(z);
+    NumericVector z_pos = siteindex[z_NM>0]; //find out where z>0
+    IntegerVector ind_z = match(siteids, z_pos);
+    arma::vec convert_z_vec= as<arma::vec>(ind_z);
+    W_iter = W_vb.rows( find(convert_z_vec>0) ) ;
+    Y_iter = Y.rows( find(convert_z_vec>0) ); //an alternate method of obtaining W_iter and Y_iter
+    //-----------------------------------------------------------------------
+  //Rcout << "\n Before alpha" << std::endl;
+
+    //Generate the Poly-Gamma variables for alpha vector
+    W_alpha = W_iter*alpha; // arma::mat
+
+    pg_alpha = rpg5(W_alpha); //arma::vec
+    //pg_alpha = as<arma::vec>( parallelMatrixRpg(wrap(W_alpha)) );
+  //Rcout << "\n pg_alpha" << std::endl;
+    //posterior samples for alpha
+  //Rcout << "\n sigma_inv_alpha_p" << size(sigma_inv_alpha_p) << std::endl;
+  //Rcout << "\n W_iter" << size(W_iter) << std::endl;
+  //Rcout << "\n W_iter.t()*diagmat( pg_alpha )*W_iter" << size(W_iter.t()*diagmat( pg_alpha )*W_iter) << std::endl;
+    alpha_cov = inv_sympd( sigma_inv_alpha_p + W_iter.t()*diagmat( pg_alpha )*W_iter );
+  //Rcout << "\n alpha_cov" << std::endl;
+    alpha_mu =  alpha_cov*( W_iter.t()*( Y_iter - 0.5 ) + sigma_inv_alpha_p*alpha_m);
+  //Rcout << "\n alpha_mu" << std::endl;
+    alpha = mvrnormArma2(1, alpha_mu, alpha_cov);
+  //  Rcout << "\n alpha" << std::endl;
+    //-----------------------------------------------------------------------
+
+    //update the p, psi and z
+    p = 1/(1+exp(-W_vb*alpha)); //plogis(W_vb*alpha)
+
+    //update the psi matrix for those sites the species has not been seen
+    psi.elem(not_observed_index) = 1/(1+exp(-X.rows(not_observed_index)*beta)); //plogis(X[not.observed.index,]%*%beta)
+
+    /*sample z
+    * remember rbinom from Rcpp requires the prob to be a 'double'
+    * Also p.rows(double, double). One cannot use vectors.
+    */
+    for (int idown=0; idown< not_observed_index.n_rows; idown++){
+      prod_p_start = starts.row(not_observed_index(idown))-1;
+      prod_p_end = ends.row(not_observed_index(idown))-1;
+
+      /*Rcpp::Rcout << "p.rows(...) = \n" << prod(1-p.rows(prod_p_start(0), prod_p_end(0)))  << std::endl;
+      Rcpp::Rcout << "Cant do this: prod(p.rows(1,3))(0)" << std::endl;
+      1/(1+ (1-psi[x])/(psi[x]*prod(1-p[start.end.index[x,1]:start.end.index[x,2]])) )*/
+
+      prob = 1/( 1+ ( 1-psi.row(not_observed_index(idown)) )/( psi.row(not_observed_index(idown))*arma::prod(1-p.rows(prod_p_start(0), prod_p_end(0))) ) );
+      zdraw = rbinom(1,1, prob(0));
+      z(not_observed_index(idown)) = zdraw(0);
+    }//finish sampling the z matrix
+
+    //-----------------------------------------------------------------------
+
+    //store the samples
+    isamples_counter = isamples - num_burnin;
+    if (isamples_counter>= 0){
+      //post.col(isamples-floor(ndraws/2)) = join_cols(alpha, beta);
+      post_alpha.col(isamples_counter) = alpha;
+      post_beta.col(isamples_counter) = beta;
+      post_z.col(isamples_counter) = z;
+    }
+    //-----------------------------------------------------------------------
+  }//end of sampling
+
+  return List::create(_["alpha"]=post_alpha,
+                      _["beta"]=post_beta,
+                      _["z"]=post_z);
+}
+
+// [[Rcpp::depends("RcppArmadillo")]]
 double rgammadouble(int a, double b, double c)
 {   //from http://iamrandom.com/rgamma-rgammadouble
      Rcpp::NumericVector x = rgamma(a,b,1.0/c);
@@ -937,5 +1125,259 @@ List logitoccSPAT(arma::mat X, arma::mat W_vb, arma::mat Y, arma::mat z, arma::v
                          _["tau"]=post_tau,
                          _["real.occ"]= post_z,
                          _["psi"]=post_psi );
+
+}
+
+
+// [[Rcpp::depends("RcppArmadillo")]]
+// [[Rcpp::export]]
+List logitoccSPATsplit(arma::mat X, arma::mat W_vb, arma::mat Y, arma::mat z, arma::vec ysum, arma::vec nvisits,
+                  arma::mat K, arma::mat Minv, //arma::mat Mt,
+                  double n_obs,
+                  NumericVector siteids, arma::vec unsurveyed_ind,
+                  double tau_0, double a_tau, double b_tau,
+                  arma::mat alpha_m, arma::mat beta_m,
+                  arma::mat sigma_inv_alpha_p, arma::mat sigma_inv_beta_p,
+                  int ndraws, double percent_burn_in){
+
+  /*
+  * Called by the R function, occSPATlogit
+  *
+  * Some Rcpp notes
+  * Some R translations put in brackets at times.
+  *
+  * 1. Indices
+  * arma::mat x;
+  * x.row(0) is the first row a matrix. (x[1,])
+  * x.row(1) is the second row a matrix. (x[2,])
+  * Indices start at 0!
+  *
+  * 2. Multiple rows
+  * x.rows(1,3) is x[2:4, ] using the R notation.
+  */
+
+  //some constants or constnat matrices
+  int const1 = n_obs -1;
+  arma::mat const2 = sigma_inv_beta_p*beta_m;
+  arma::mat const3 = sigma_inv_alpha_p*alpha_m;
+
+  // define some matrices
+  arma::mat Xs = X.rows(0, const1);
+  arma::mat Xs_t = Xs.t(); //the transpose of the design matrix
+  //int n = X.n_rows; //the number of sites (survey + unsurvey)
+  int N = W_vb.n_rows; //the total number of visits
+
+  arma::mat Ks = K.rows(0, const1);
+  arma::mat Ks_t = Ks.t(); //the transpose of the spatial design matrix
+  int r = K.n_cols; //the number of column of K; the number of spatial random effects added
+
+  NumericVector siteindex(n_obs); //siteindex = 1, 2, ..., number of surveyed sites
+  for (int idown =0; idown<n_obs; idown++){siteindex(idown) = idown+1;}
+
+  uvec observed_index = find(ysum>0);
+  //identify the indices associated with sites where species was seen (from surveyd sites)
+
+  uvec not_observed_index = find(ysum==0);
+  //identify the indices associated with sites where species was not seen (from surveyd sites)
+
+  int n_not_observed_surveyed_sites = size(find(ysum.rows(0, const1)==0))(0);
+  //the number of sites with 0 detections based on surveyed sites
+
+  uvec unsurveyed_index = find(unsurveyed_ind>0) + n_obs;
+  int n_unsurveyed = size(unsurveyed_index)(0);
+
+  //construct a matrix with the start and end for each site
+  arma::vec starts(n_obs);
+  starts(0) = 1; //might be better to make it start at 0 at a later stage!!!
+  arma::vec ends = cumsum(nvisits);
+  starts.rows( 1, const1 ) = ends.rows(0, const1-1)+1;
+  //-----------------------------------------------------------------------
+
+  //Declare parameter vectors
+  arma::vec psi = z; //set the starting value of psi to z
+  //arma::vec psi_occ;
+  //arma::vec common_term;
+  arma::mat p = zeros<arma::mat>(N, 1); //initialize p to contain 0's
+  arma::mat alpha = alpha_m; //initialize the alpha matrix
+  arma::mat beta = beta_m; //initialize the alpha matrix
+  mat theta = zeros<mat>(r,1); //initialise the theta matrix to 0's; i.e. no spatial effects initiall
+  double tau=tau_0; //initialize tau =1; the spatial precision scalar
+  //-----------------------------------------------------------------------
+
+  //Posterior sampling of beta
+  arma::mat Xs_beta; //Xs*beta
+  arma::vec pg_beta; //Polya-Gamma variates used to sample beta
+  arma::mat beta_cov;
+  //arma::mat beta_mu;
+
+  //Posterior sampling of theta
+  arma::mat Ks_theta; //Ks*theta
+  arma::mat theta_cov;
+  //arma::mat theta_mu;
+  //-----------------------------------------------------------------------
+
+  //Posterior sampling of tau
+  mat inv_scale;
+  mat tau_mat(1,1);
+  //-----------------------------------------------------------------------
+
+  //construct the W matrix associated with z=1
+  //uvec z_equals1_rows;//identify all indices with z==1
+  //uvec z_equals1_allrows(sum(nvisits)); //used to identify all rows of W_vb where z==1
+  arma::mat W_iter;
+  arma::mat Y_iter;
+  //int counter;
+  //-----------------------------------------------------------------------
+
+  //Posterior sampling of alpha
+  arma::mat W_alpha;
+  arma::vec pg_alpha; //Polya-Gamma variates used to sample alpha
+  arma::mat alpha_cov;
+  //arma::mat alpha_mu;
+  //-----------------------------------------------------------------------
+
+  //update the p, psi and z
+  NumericVector zdraw(1);
+  arma::vec prob(1);
+  arma::vec prod_p_start; arma::vec prod_p_end;
+  //-----------------------------------------------------------------------
+
+  //The outputs
+  int isamples_counter;
+  int num_burnin = floor(ndraws*percent_burn_in);
+  int num_samples_kept = ndraws - num_burnin;
+  arma::mat post_alpha(alpha.n_rows , num_samples_kept);
+  arma::mat post_beta(beta.n_rows, num_samples_kept);
+  arma::mat post_theta(theta.n_rows, num_samples_kept);
+  arma::mat post_tau(1, num_samples_kept);
+  arma::mat post_z(z.n_rows, num_samples_kept);
+  arma::mat post_psi(z.n_rows, num_samples_kept);
+  //-----------------------------------------------------------------------
+
+  //now do the sampling here
+  Xs_beta = Xs*beta; //arma::mat
+  Ks_theta = Ks*theta; //arma::mat
+
+  for (int isamples=0; isamples<ndraws; isamples++){
+
+    //add in an interuptor. i.e. escape if the user cancels operations
+    //checks every 1000 iterations
+    if (isamples % 1000 == 0) {
+      Rcpp::checkUserInterrupt();
+    }
+
+    //Generate the Poly-Gamma variables for beta vector
+    //pg_beta = as<arma::vec>( parallelMatrixRpg(wrap(Xs_beta + Ks_theta)) );
+    pg_beta = rpg5(Xs_beta + Ks_theta);
+    //-----------------------------------------------------------------------
+
+    //posterior samples for beta
+    beta_cov = inv_sympd( sigma_inv_beta_p + Xs_t*diagmat( pg_beta )*Xs ); //arma::mat
+    beta = mvnrnd(beta_cov*( Xs_t*( z.rows(0,n_obs-1) - 0.5 - diagmat( pg_beta )*( Ks_theta) ) + const2), beta_cov, 1);
+    //beta = mvrnormArma2(1, beta_cov*( Xs_t*( z.rows(0,n_obs-1) - 0.5 - diagmat( pg_beta )*( Ks_theta) ) + const2), beta_cov);
+    Xs_beta = Xs*beta; //arma::mat
+    //-----------------------------------------------------------------------
+
+    //posterior samples for theta
+    theta_cov = inv_sympd( tau*Minv + Ks_t*diagmat( pg_beta )*Ks );
+    theta = mvnrnd(theta_cov*Ks_t*( z.rows(0, const1) - 0.5 - diagmat( pg_beta )*( Xs_beta  ) ), theta_cov, 1);
+    //theta = mvrnormArma2(1, theta_cov*Ks_t*( z.rows(0, const1) - 0.5 - diagmat( pg_beta )*( Xs_beta  ) ), theta_cov);
+    Ks_theta = Ks*theta; //arma::mat
+    //-----------------------------------------------------------------------
+
+    //posterior samples for tau
+    /*inv_scale =  theta.t()*Minv*theta *0.5 + b_tau ;
+    tau = randg(1, distr_param(a_tau + 0.5*r, 1.0/inv_scale(0)))(0);
+    tau_mat(0,0) = tau;*/
+
+    inv_scale =  theta.t()*Minv*theta*0.5 + b_tau ; //not inverse scale. rgammadouble uses 1/inv_scale = 1/( theta.t()*Minv*theta *0.5 + i2 );
+    tau = rgammadouble(1, a_tau + 0.5*r, inv_scale(0) );
+    tau_mat(0,0) = tau;
+    //-----------------------------------------------------------------------
+
+    //convert arma::vec z to NumericVector zNM (but only for surveyed locations)
+    NumericVector z_NM = wrap(z.rows(0, const1));
+    NumericVector z_pos = siteindex[z_NM>0]; //find out where z>0
+    IntegerVector ind_z = match(siteids, z_pos);
+    arma::vec convert_z_vec= as<arma::vec>(ind_z);
+    W_iter = W_vb.rows( find(convert_z_vec>0) ) ;
+    Y_iter = Y.rows( find(convert_z_vec>0) );
+    //-----------------------------------------------------------------------
+
+    //Generate the Poly-Gamma variables for alpha vector
+    W_alpha = W_iter*alpha; // arma::mat
+    //pg_alpha = as<arma::vec>( parallelMatrixRpg(wrap(W_alpha)) ); //arma::vec
+    pg_alpha = rpg5(W_alpha); //arma::vec
+
+    //posterior samples for alpha
+    alpha_cov = inv_sympd( sigma_inv_alpha_p + W_iter.t()*diagmat( pg_alpha )*W_iter );
+    alpha = mvnrnd(alpha_cov*( W_iter.t()*( Y_iter - 0.5 ) + const3), alpha_cov, 1);
+    //alpha = mvrnormArma2(1, alpha_cov*( W_iter.t()*( Y_iter - 0.5 ) + const3), alpha_cov);
+    //-----------------------------------------------------------------------
+
+    //update the p, psi and z
+    p = 1/(1 + exp(-W_vb*alpha)); //plogis(W_vb*alpha)
+
+    //update the psi matrix for those sites the species has not been seen
+    //psi.elem(not_observed_index) = 1/(1 + exp(-X.rows(not_observed_index)*beta - K.rows(not_observed_index)*theta ));
+    psi = 1/(1 + exp(-X*beta - K*theta ));
+
+    /*sample z
+    * remember rbinom from Rcpp requires the prob to be a 'double'
+    * Also p.rows(double, double). One cannot use vectors.
+    */
+    //for surveyed sites with zero detections
+    //this can be made more efficient!
+    for (int idown=0; idown< n_not_observed_surveyed_sites; idown++){
+      prod_p_start = starts.row(not_observed_index(idown))-1;
+      prod_p_end = ends.row(not_observed_index(idown))-1;
+
+      prob = 1/( 1 + ( 1-psi.row(not_observed_index(idown)) )/( psi.row(not_observed_index(idown))*arma::prod(1-p.rows(prod_p_start(0), prod_p_end(0))) ) );
+
+      zdraw = rbinom(1,1, prob(0));
+      z(not_observed_index(idown)) = zdraw(0);
+    }
+
+    //for unsurveyed sites
+    for (int idown=0; idown< n_unsurveyed; idown++){
+      prob = psi.row(n_obs + idown);
+      zdraw = rbinom(1,1, prob(0));
+      z(n_obs + idown) = zdraw(0);
+    } //finish sampling the z matrix
+
+    //idea from stocc package
+    /*
+    common_term = exp(ln_invlogit( X*beta + K*theta ) + Mt*log_not_prob(W_vb*alpha));
+    psi_occ = common_term/( common_term + exp( log_not_prob(X*beta) ) );
+
+    //sample z
+    for (int idown=0; idown< n; idown++){
+    prob = psi_occ.row(idown);
+    zdraw = rbinom(1,1, prob(0));
+    z(idown) = zdraw(0);
+    }//finish sampling the z matrix
+    */
+
+    //-----------------------------------------------------------------------
+
+    //store the samples
+    isamples_counter = isamples - num_burnin;
+
+    if (isamples_counter>=0){
+      post_alpha.col(isamples_counter) = alpha;
+      post_beta.col(isamples_counter) = beta;
+      post_theta.col(isamples_counter) = theta;
+      post_tau.col(isamples_counter) = tau_mat;
+      post_z.col(isamples_counter) = z;
+      post_psi.col(isamples_counter) = psi;
+    }
+  }
+
+  return List::create(_["alpha"]=post_alpha,
+                      _["beta"]=post_beta,
+                      _["theta"]=post_theta,
+                      _["tau"]=post_tau,
+                      _["real.occ"]= post_z,
+                      _["psi"]=post_psi );
 
 }

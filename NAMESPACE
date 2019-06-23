@@ -1,4 +1,4 @@
-useDynLib(Rcppocc,.registration=TRUE)
+useDynLib(RcppoccDev,.registration=TRUE)
 exportPattern("^[[:alpha:]]+")
 importFrom(Rcpp, evalCpp)
 

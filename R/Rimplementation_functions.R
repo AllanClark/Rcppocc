@@ -119,7 +119,8 @@ PGocc <- function(formula, data_inputs,
                   ndraws=1,
                   alpha_m, beta_m,
                   sigma_inv_alpha_p, sigma_inv_beta_p,
-                  percent_burn_in){
+                  percent_burn_in,
+                  store_z=FALSE){
   #The R function that uses the Polya-Gamma algorithm to fit a Bayesian
   #single season model
   #This function does allow the user to specify informative priors for
@@ -147,11 +148,21 @@ PGocc <- function(formula, data_inputs,
   ysum <- apply(y,1,sum, na.rm=TRUE) #a vector!
   z <- design_mats$pres_abs #the inital z vector
 
-  logitoccPG3(X, Y, W_vb, as.matrix(siteids, ncol=1), ndraws, ysum, z,
+  if (store_z==FALSE){
+    logitoccPG3(X, Y, W_vb, as.matrix(siteids, ncol=1), ndraws, ysum, z,
               nvisits,
               alpha_m, beta_m,
               sigma_inv_alpha_p, sigma_inv_beta_p,
               percent_burn_in)
+  }else{
+    logitoccPG3_z(X, Y, W_vb, as.matrix(siteids, ncol=1), ndraws, ysum, z,
+                nvisits,
+                alpha_m, beta_m,
+                sigma_inv_alpha_p, sigma_inv_beta_p,
+                percent_burn_in)
+  }
+
+
 }
 
 #Code for running the Bayesian analysis using jagsUI
