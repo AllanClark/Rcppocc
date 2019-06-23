@@ -11,16 +11,16 @@ The following package can be installed as follows:
 2. Now type the following R lines of code in your R workspace: 
 
 require(devtools)
-install_github("AllanClark/Rcppocc")
+install_github("AllanClark/RcppoccDev")
 
 'Rcppocc' should now install.
 
 
-A quick note on exiting 'Rcppocc':
+A quick note on exiting 'RcppoccDev':
 ----------------------------------
 
 If you do not want to use the package in your current project, detach the package
 as follows:
 
-detach("package:Rcppocc", unload=TRUE)
+detach("package:RcppoccDev", unload=TRUE)
 

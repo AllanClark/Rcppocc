@@ -1,4 +1,4 @@
-Package: Rcppocc
+Package: RcppoccDev
 Type: Package
 Title: Fits various Bayesian occupancy models assuming all regression effects 
   uses a logit link function
@@ -23,3 +23,7 @@ LinkingTo:
 SystemRequirements: GNU make
 RoxygenNote: 6.1.0
 LazyData: true
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

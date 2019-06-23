@@ -1,0 +1,838 @@
+---
+title: "Vignette: Rcppocc"
+author: "Allan Clark"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette: Rcppocc}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
+
+- Never uses retina figures
+- Has a smaller default figure size
+- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
+
+## Vignette Info
+
+Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
+
+## Styles
+
+The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
+
+    output: 
+      rmarkdown::html_vignette:
+        css: mystyles.css
+
+## Figures
+
+The figure sizes have been customised so that you can easily put two images side-by-side. 
+
+```{r, fig.show='hold', eval=FALSE}
+plot(1:10)
+plot(10:1)
+```
+
+You can enable figure captions by `fig_caption: yes` in YAML:
+
+    output:
+      rmarkdown::html_vignette:
+        fig_caption: yes
+
+Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
+
+## More Examples
+
+You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
+
+```{r, echo=FALSE, results='asis', eval=FALSE}
+knitr::kable(head(mtcars, 10))
+```
+
+Also a quote using `>`:
+
+> "He who gives up [code] safety for [code] speed deserves neither."
+([via](https://twitter.com/hadleywickham/status/504368538874703872))
+
+
+## Intrduction
+
+
+## Analysis using simulated data
+
+Simulate some data.
+```{r}
+occ_data <- function(psi, d, nsites, K){
+  #simulate presenece-absence data
+  #psi = occupancy prob
+  #d = detection prob
+  #n = number of sites
+  #K = number of surveys per site
+  
+  set.seed(1) #hard-coded
+  
+  #true occupancy
+  z <- rbinom(nsites, size=1, prob=psi)
+  
+  #presence absence data
+  y <- matrix(0, nrow=nsites, ncol=K)
+  
+  pres_index <- which(z==1)
+  
+  #only update y at locations where z=1
+  for (i in pres_index){
+    #the site visits
+    for (j in 1:K){
+      y[i, j] <- rbinom(1, size=1, prob=d)
+    }#end j
+  }#end i
+  
+  return(y)
+}
+
+K=3
+no <- 1000
+data.sim <- occ_data(0.3, 0.3, no, K)
+```
+
+Bundle data into the stocc form. 
+
+```{r}
+#bundle data into the correct format for stocc
+#occupancy dataframe at the subset of sites where surveys were performed
+surveyIndex.sim <- 1:no #surveyIndex are the ids of the surveyed locations
+siteIndex.sim <- 1:no #ids for all sites considered
+x.sim <- surveyIndex.sim # dummy x coord
+y.sim <- surveyIndex.sim #dummy y coord
+
+Site.Data.sim <- as.data.frame( cbind( siteIndex.sim, 1:no, 1:no ) )
+colnames(Site.Data.sim)<- c("SiteName", "Longitude", "Latitude")
+
+#detection dataframe - only at surveyed locations
+#stacked as a column vector
+PAdata.sim <- c(t(data.sim)) #presence-absence data
+SiteNamereps.sim <- rep(surveyIndex.sim, rep(K, no)) #the site names
+dummy.var <- matrix(1, no, K) #detection covariate - dummy
+Longitudereps.sim <- rep(x.sim[surveyIndex.sim], rep(K, no)) #dummy
+Latitudereps.sim <- Longitudereps.sim #dummy
+
+#at surveyed locations
+Visit.data.sim <- data.frame(SiteNamereps.sim, 
+                             Longitudereps.sim, Latitudereps.sim, 
+                             dummy.var, PAdata.sim)
+colnames(Visit.data.sim) <- c("SiteName", "Longitude", "Latitude", "dummy", "PAdata.sim")
+
+Names.sim <- list(visit = list(site = "SiteName", obs = "PAdata.sim"),
+              site = list(site = "SiteName", coords = c("Longitude", "Latitude")) )
+
+require(stocc) #loaded the stocc package!
+Make.so.data.sim <- make.so.data(visit.data = Visit.data.sim, 
+                                 site.data = Site.Data.sim, names = Names.sim)
+```
+
+```{r}
+#Set the prior distributions used
+nalphas.sim <-1
+nbetas.sim <- nalphas.sim
+beta_m.sim<-matrix( rep(0,1), ncol=1)
+sigma_inv_beta_p.sim<-diag(nbetas.sim)/100 #prior inverse covariance for beta
+alpha_m.sim <- beta_m.sim
+sigma_inv_alpha_p.sim<-sigma_inv_beta_p.sim #prior inverse covariance for alpha
+
+```
+
+
+How to fit the nonspatial occupancy model using \lq Rcppocc\rq{}. Here I use all of the survey sites.
+```{r}
+nsims <- 10000
+
+require(RcppoccDev)
+
+Xmat.sim <- matrix(1, no, 1) #dummy
+Wmat.sim <- list( dummy=matrix(1, no, K) ) #dummy
+yobs.sim <- data.sim
+data_list.sim <- list(W=Wmat.sim, X=Xmat.sim, y= yobs.sim)
+
+#increase 'ndraws' to a larger number 
+t1<-Sys.time()
+nonspat_occ.sim <- PGocc(formula= y  ~ 1 ~ 1,
+             data_inputs = data_list.sim,
+             ndraws=nsims,
+             alpha_m=alpha_m.sim, beta_m=beta_m.sim,
+             sigma_inv_alpha_p=sigma_inv_alpha_p.sim,
+             sigma_inv_beta_p=sigma_inv_beta_p.sim,
+             percent_burn_in=0.5,
+             store_z=TRUE)
+t2<-Sys.time()
+t2-t1
+
+apply(nonspat_occ.sim$alpha, 1, mean)
+apply(nonspat_occ.sim$beta, 1, mean)
+
+apply(nonspat_occ.sim$alpha, 1, sd)^2
+apply(nonspat_occ.sim$beta, 1, sd)
+```
+
+
+FITTING THE SPLITS...
+
+```{r}
+require(foreach)
+require(doParallel)
+
+t1_spl<-Sys.time()
+
+  ngrps <- 2
+
+  #Set the prior distributions used
+  sigma_inv_beta_spl<- (diag(nbetas.sim)/100)/ngrps #prior inverse covariance for beta
+  sigma_inv_alpha_spl<- (diag(nalphas.sim)/100)/ngrps #prior inverse covariance for alpha
+
+  #set.seed(1000)
+  random_splits <- sample(1:no, replace=FALSE)
+  random_splits2 <- random_splits
+  
+  random_sp_list <- list(NULL)
+  for (i in 1:(ngrps-1)){
+    random_sp_list[[i]] <- random_splits2[c(1:floor(no/ngrps))]
+    random_splits2 <- random_splits2[-c(1:floor(no/ngrps))]
+  }
+  
+  random_sp_list[[ngrps]] <- random_splits2
+  
+  cl <- makeCluster(4)
+  registerDoParallel(cl)
+  
+  occ_splits.sim <- foreach(ii=1:ngrps, .inorder=TRUE, .packages = "RcppoccDev")%dopar%{
+
+    random_split <- random_sp_list[[ii]]
+    Xmat_spl <- matrix(1, no, 1)[random_split] #dummy 
+    Wmat_spl <- list( dummy=matrix(1, no, K)[random_split,] ) #dummy 
+    yobs_spl <- data.sim[random_split,]
+    
+    data_list_spl <- list(W=Wmat_spl, X=Xmat_spl, y= yobs_spl)
+    
+    #increase 'ndraws' to a larger number 
+    PGocc(formula= y  ~ 1 ~ 1,
+             data_inputs = data_list_spl,
+             ndraws=nsims,
+             alpha_m=alpha_m.sim, beta_m=beta_m.sim,
+             sigma_inv_alpha_p=sigma_inv_alpha_spl,
+             sigma_inv_beta_p=sigma_inv_beta_spl,
+             percent_burn_in=0.5,
+             store_z=TRUE)
+  }
+  stopCluster(cl)
+  
+  #--------------------------------------
+  #these calculations could be made faster!
+  V_alphas <- 0
+  C_alphas <-  0
+  
+  for (ii in 1:ngrps){
+    temp <- 1/( var(t(occ_splits.sim[[ii]]$alpha))[1] )
+    V_alphas <- V_alphas + temp
+    C_alphas <- C_alphas + temp*mean(occ_splits.sim[[ii]]$alpha)
+  }
+  V_alphas <- 1/(V_alphas)
+  M_alphas <- V_alphas*C_alphas
+  
+  V_betas <- 0
+  C_betas <-  0
+  
+  for (ii in 1:ngrps){
+    temp <- 1/( var(t(occ_splits.sim[[ii]]$beta))[1] )
+    V_betas <- V_betas + temp
+    C_betas <- C_betas + temp*mean(occ_splits.sim[[ii]]$beta)
+  }
+  V_betas <- 1/(V_betas)
+  M_betas <- V_betas*C_betas
+  #--------------------------------------
+t2_spl<-Sys.time()
+t2_spl - t1_spl
+```
+
+```{r}
+par(mfrow=c(1,2), pty="s")
+
+min.a <- min(c(occ_splits.sim[[1]]$alpha[1,]))
+for (ii in 2:ngrps){
+  min.a <- min(c(min.a, occ_splits.sim[[ii]]$alpha[1,]) )
+} 
+max.a <- max(c(occ_splits.sim[[1]]$alpha[1,]))
+for (ii in 2:ngrps){
+  max.a <- max(c(max.a, occ_splits.sim[[ii]]$alpha[1,]) )
+} 
+
+for (jj in 1:1){
+  plot(density(nonspat_occ.sim$alpha[jj,]), xlab=bquote(alpha[.(jj-1)]), 
+       main="", col="blue", lwd=2,
+       xlim=c(min.a, max.a))
+
+  for (ii in 1:ngrps){
+    lines(density(occ_splits.sim[[ii]]$alpha[jj,]), main=bquote(alpha[.(jj-1)]), col=ii+1)
+  }
+
+  xs <- seq(from=min(nonspat_occ.sim$alpha[jj,]), max(nonspat_occ.sim$alpha[jj,]), length.out = 500)
+  lines(xs, dnorm(xs, mean=M_alphas[jj], sd=sqrt(V_alphas[jj])), lwd=2, col="red")
+}
+
+```
+
+
+```{r}
+min.b <- min(c(occ_splits.sim[[1]]$beta[1,]))
+for (ii in 2:ngrps){
+  min.b <- min(c(min.b, occ_splits.sim[[ii]]$beta[1,]) )
+} 
+max.b <- max(c(occ_splits.sim[[1]]$beta[1,]))
+for (ii in 2:ngrps){
+  max.b <- max(c(max.b, occ_splits.sim[[ii]]$beta[1,]) )
+} 
+
+par(mfrow=c(1,1))
+for (jj in 1:1){
+  plot(density(nonspat_occ.sim$beta[jj,]), xlab=bquote(beta[.(jj-1)]), main="",
+       xlim=c(min.b, max.b))
+
+  for (ii in 1:ngrps){lines(density(occ_splits.sim[[ii]]$beta[jj,]), main=bquote(beta[.(jj-1)]), col=ii+1)}
+
+  xs <- seq(from=min(nonspat_occ.sim$beta[jj,]), max(nonspat_occ.sim$beta[jj,]), length.out = 500)
+  lines(xs, dnorm(xs, mean=M_betas[jj], sd=sqrt(V_betas[jj])), lwd=2, col="red")
+}
+
+```
+
+```{r}
+pdf("occ_scenario4_2_ngrps.pdf")
+par(mfrow=c(1,2), pty="s")
+
+for (jj in 1:1){
+  plot(density(nonspat_occ.sim$alpha[jj,]), xlab=bquote(alpha[.(jj-1)]), 
+       main=expression(paste("(",psi,"=0.3, ", p,"=0.3, n=1000, K=3)",sep="")), col="blue", lwd=2,
+       xlim=c(min.a, max.a), cex.main=0.8)
+
+  for (ii in 1:ngrps){
+    lines(density(occ_splits.sim[[ii]]$alpha[jj,]), main=bquote(alpha[.(jj-1)]), col=ii+1)
+  }
+
+  xs <- seq(from=min(nonspat_occ.sim$alpha[jj,]), max(nonspat_occ.sim$alpha[jj,]), length.out = 500)
+  lines(xs, dnorm(xs, mean=M_alphas[jj], sd=sqrt(V_alphas[jj])), lwd=2, col="red")
+}
+legend("topleft", legend=c("Full","Combined"), lwd=rep(2,2), col=c("blue", "red"), bty="n", cex=.7)
+
+for (jj in 1:1){
+  plot(density(nonspat_occ.sim$beta[jj,]), xlab=bquote(beta[.(jj-1)]), 
+       xlim=c(min.b, max.b), lwd=2, col="blue", cex.main=0.8,
+       main=expression(paste("(",psi,"=0.3, ", p,"=0.3, n=1000, K=3)",sep="")))
+
+  for (ii in 1:ngrps){lines(density(occ_splits.sim[[ii]]$beta[jj,]), main=bquote(beta[.(jj-1)]), col=ii+1)}
+
+  xs <- seq(from=min(nonspat_occ.sim$beta[jj,]), max(nonspat_occ.sim$beta[jj,]), length.out = 500)
+  lines(xs, dnorm(xs, mean=M_betas[jj], sd=sqrt(V_betas[jj])), lwd=2, col="red")
+}
+legend("topright", legend=c("Full","Combined"), lwd=rep(2,2), col=c("blue", "red"), bty="n", cex=.7)
+dev.off()
+
+```
+
+## Analysis of the Cape Weaver data set
+
+An introductory analysis
+
+```{r}
+load("/Users/allanclark/Documents/AllanClark/Stats/Research/Clark_AE/PhD/Paper3/EURINGmanuscript/Analysis/Application/Rework/sa_cape_weaver/InitialData/sa_cape_weaver_PC2_int.RData")
+```
+
+```{r}
+#Some functions and packages
+require(coda)
+require(xtable) #download and install this!
+require(openxlsx)
+require(maptools)
+require(stocc)
+require(PBSmapping)
+require(mapdata)
+require(RColorBrewer)
+
+.pardefault <- par(no.readonly = T)
+
+make_coords<-function(xy){
+     #this assumes that the centroids of QDGC were calculated by using 0.25/2
+     x<-xy[1]
+     y<-xy[2]
+     shift<- 0.25/2
+     a1<-c(x-shift,y+shift)
+     a2<-c(x+shift, y+shift)
+     a3<-c(x+shift, y-shift)
+     a4<-c(x-shift, y-shift)
+     #a5<-a1
+     df<-as.data.frame(rbind(a1,a2,a3,a4))
+     df<-cbind(0, 1:4, df)
+     colnames(df)<-c("PID","POS","X","Y")
+     return(df)
+}
+
+image.scale <- function(z, zlim, col = heat.colors(12),
+                        breaks, horiz=TRUE, ylim=NULL, xlim=NULL, side=2, cex.axis=1, ...)
+{
+     #Taken from "me nugget" Add in reference!
+     if(!missing(breaks)){
+          if(length(breaks) != (length(col)+1)){stop("must have one more break than colour")}
+     }
+     if(missing(breaks) & !missing(zlim)){
+          breaks <- seq(zlim[1], zlim[2], length.out=(length(col)+1))
+     }
+     if(missing(breaks) & missing(zlim)){
+          zlim <- range(z, na.rm=TRUE)
+          #adds a bit to the range in both directions
+          zlim[2] <- zlim[2]+c(zlim[2]-zlim[1])*(1E-3)
+          zlim[1] <- zlim[1]-c(zlim[2]-zlim[1])*(1E-3)
+          breaks <- seq(zlim[1], zlim[2], length.out=(length(col)+1))
+     }
+     poly <- vector(mode="list", length(col))
+     for(i in seq(poly)){
+          poly[[i]] <- c(breaks[i], breaks[i+1], breaks[i+1], breaks[i])
+     }
+     xaxt <- ifelse(horiz, "s", "n")
+     #yaxt <- ifelse(horiz, "n", "s")
+     yaxt <- "n"
+     if(horiz){YLIM<-c(0,1); XLIM<-range(breaks)}
+     if(!horiz){YLIM<-range(breaks); XLIM<-c(0,1)}
+     if(missing(xlim)) xlim=XLIM
+     if(missing(ylim)) ylim=YLIM
+     plot(1,1,t="n",ylim=ylim, xlim=xlim, xaxt=xaxt, yaxt=yaxt, xaxs="i", yaxs="i", ...)
+     axis(side=side, cex.axis=cex.axis, tick=FALSE)
+     for(i in seq(poly)){
+          if(horiz){
+               polygon(poly[[i]], c(0,0,1,1), col=col[i], border=NA)
+          }
+          if(!horiz){
+               polygon(c(0,0,1,1), poly[[i]], col=col[i], border=NA)
+          }
+     }
+     
+     return(col)
+}
+
+make_map2<-function(map_variable, ngroups_colours, caption, xycords, cex.axis=1){
+     #map_variable<-psi_mean_vb
+     #ngroups_colours<-20
+     #caption = some caption that will be placed at the top of the map
+     #xycords = matrix with x and y
+     #cex.axis = scale factor for the x axis
+     
+     print("Specify layout and par before using this function!")
+     
+     breaks <- seq(min(map_variable), max(map_variable),length.out=ngroups_colours)
+     cbPalette <- brewer.pal(n=9, name="YlOrRd")
+     Colours<-colorRampPalette(cbPalette)
+     plot(1, type="n", xaxt="n", yaxt="n", bty="n")
+     
+     is<-image.scale(map_variable, col=Colours(length(breaks)-1), 
+                     breaks=breaks, horiz=F, xlab="", ylab="", 
+                     side=2, cex.axis=cex.axis)
+     box()
+     
+     mm<-map("worldHires","South Africa", xlim=c(15,33), ylim = c(-35, -21),
+             boundary=T, plot=F)
+     plot(mm$x, mm$y, xlab="Longitude", ylab="Latitude", 
+          type="n", xaxt="n", yaxt="n", main=caption)
+     
+     Colours<-colorRampPalette(cbPalette)(ngroups_colours)[
+       as.numeric(cut(map_variable,ngroups_colours))]
+     
+     for (i in 1:nrow(xycords)){
+          xx<-make_coords( c(xycords[i,]) )
+          polygon(xx[,3], xx[,4], col= Colours[i], border=NA)
+          #polygon(xx[,3], xx[,4], col= "red", border=NULL)
+     }
+     lines(mm$x, mm$y, xlab="Longitude", ylab="Latitude")
+}
+```
+
+```{r}
+species_name<-"sa_cape_weaver"
+```
+
+```{r}
+#bundle data into the correct format for stocc
+#occupancy dataframe at the subset of sites where surveys were performed
+surveyIndex <- 1:805 #surveyIndex are the ids of the surveyed locations
+siteIndex <- 1:1881 #ids for all sites considered
+
+Site.Data <- as.data.frame( cbind( siteIndex, 
+                                species_list[[3]], 
+                                species_list[[6]][,-1] ) )
+colnames(Site.Data)<- c("SiteName", "Longitude", "Latitude", "PC1", "PC2")
+head(Site.Data)
+
+#detection dataframe - only at surveyed locations
+PAdata <- species_list[[2]]$Y$V1 #presence-absence data
+SiteNamereps <- rep(surveyIndex, species_list[[2]]$nvisits) #the site names
+nspp <- species_list[[2]]$W #detection covariate
+Longitudereps <- rep(species_list[[3]][surveyIndex,1], species_list[[2]]$nvisits)
+Latitudereps <- rep(species_list[[3]][surveyIndex,2], species_list[[2]]$nvisits)
+
+#at surveyed locations
+Visit.data <- data.frame(SiteNamereps, Longitudereps, Latitudereps, nspp, PAdata)
+colnames(Visit.data) <- c("SiteName", "Longitude", "Latitude", "nspp", "PAdata")
+
+Names <- list(visit = list(site = "SiteName", obs = "PAdata"),
+              site = list(site = "SiteName", coords = c("Longitude", "Latitude")) )
+
+require(stocc) #loaded the stocc package!
+Make.so.data <- make.so.data(visit.data = Visit.data, site.data = Site.Data, names = Names)
+```
+
+
+```{r}
+#Set the prior distributions used
+nalphas<-2
+nbetas<-3
+beta_m<-matrix( rep(0,nbetas), ncol=1)
+sigma_inv_beta_p<-diag(nbetas)/100 #prior inverse covariance for beta
+alpha_m<-matrix( rep(0,nalphas), ncol=1)
+sigma_inv_alpha_p<-diag(nalphas)/100 #prior inverse covariance for alpha
+numSpatre<-188
+
+```
+
+
+How to fit the nonspatial occupancy model using \lq Rcppocc\rq{}. Here I use all of the survey sites.
+```{r}
+nsims <- 10000
+
+require(RcppoccDev)
+
+X1X2 <- species_list[[6]][,-1]
+x1x2 <- X1X2
+x1x2[,1]<- x1x2[,1]/sd( x1x2[,1])
+x1x2[,2]<- x1x2[,2]/sd( x1x2[,2])
+
+Xmat <- x1x2[1:805,] #only use surveyed sites (805)
+Wmat <- list( nspp=species_list[[5]][,1:50] )
+yobs <- species_list[[2]]$y
+data_list <- list(W=Wmat, X=Xmat, y= yobs)
+
+#increase 'ndraws' to a larger number 
+t1<-Sys.time()
+nonspat_occ <- PGocc(formula= y  ~ PC1 + PC2 ~ nspp,
+             data_inputs = data_list,
+             ndraws=nsims,
+             alpha_m=alpha_m, beta_m=beta_m,
+             sigma_inv_alpha_p=sigma_inv_alpha_p,
+             sigma_inv_beta_p=sigma_inv_beta_p,
+             percent_burn_in=.5,
+             store_z=TRUE)
+t2<-Sys.time()
+t2-t1
+
+apply(nonspat_occ$alpha, 1, mean)
+apply(nonspat_occ$beta, 1, mean)
+
+apply(nonspat_occ$alpha, 1, sd)
+apply(nonspat_occ$beta, 1, sd)
+```
+
+Plot map of detections data!
+```{r}
+pdf("CapeWeaverSurveys.pdf")
+par(mfrow=c(1,1), mar=c(4,4,1,1), pty="s")
+mm<-map("worldHires","South Africa", xlim=c(15,33), ylim = c(-35, -21),
+        boundary=T, plot=F)
+plot(mm$x, mm$y, xlab="Longitude", ylab="Latitude", type="n", xaxt="n", yaxt="n", main="")
+lines(mm$x, mm$y, xlab="Longitude", ylab="Latitude")
+
+for (i in 1:805){
+     xx<-make_coords(c(species_list[[3]][i,1], species_list[[3]][i,2]))
+     polygon(xx[,3], xx[,4], col="grey", border="grey")
+}
+
+detections <- which(species_list[[2]]$pres_abs ==1)
+
+for (i in 1:length(detections)){
+     xx<-make_coords(c(species_list[[3]][detections[i],1], species_list[[3]][detections[i],2]))
+     polygon(xx[,3], xx[,4], col="red", border="red", cex=.5)
+}
+
+legend("topleft", legend=c("Sample Locations", "Observed"), pch=rep(15,2), bty="n", col=c("grey","red"))
+dev.off()
+```
+
+
+```{r}
+require(maptools)
+
+#this takes a long time!!!
+setwd("/Users/allanclark/Documents/AllanClark/Stats/Research/Clark_AE/PackagesDevelopment/AnalysisIdeas/RcppoccDev")
+file <- "/Users/allanclark/Documents/AllanClark/Stats/Research/Clark_AE/PackagesDevelopment/AnalysisIdeas/RcppoccDev/RSA_Provinces_WGS84.shp"
+
+shapefile <- readShapeSpatial(file)
+plot(shapefile)
+
+
+library(rgdal)
+setwd("/Users/allanclark/Documents/AllanClark/Stats/Research/Clark_AE/PackagesDevelopment/AnalysisIdeas/RcppoccDev")
+
+ZAmap <- readOGR(dsn = path.expand("/Users/allanclark/Documents/AllanClark/Stats/Research/Clark_AE/PackagesDevelopment/AnalysisIdeas/RcppoccDev")
+                 , layer = "RSA_Provinces_WGS84")
+#ZARain <- readGDAL( 'map.asc')
+#image(ZARain, col = topo.colors(24))
+plot(ZAmap)
+
+#the file is there
+file.exists("/Users/allanclark/Documents/AllanClark/Stats/Research/Clark_AE/PackagesDevelopment/AnalysisIdeas/RcppoccDev/RSA_Provinces_WGS84.shp")
+
+
+library(raster)
+s <- shapefile("/Users/allanclark/Documents/AllanClark/Stats/Research/Clark_AE/PackagesDevelopment/AnalysisIdeas/RcppoccDev/RSA_Provinces_WGS84.shp")
+
+
+#coords of a particular province
+shapefile@polygons[[1]]@Polygons[[1]]@coords
+
+#identify the provinces and their order
+#  [1] Eastern Cape Province  Free State Province    Gauteng Province      
+#  [4] Mpumalanga Province    Northern Cape Province Limpopo Province      
+#  [7] North West Province    Western Cape Province  Lesotho               
+# [10] KwaZulu-Natal Province Swaziland
+
+
+for (i in 1:11){
+print(point.in.polygon(point.x=species_list[[3]][1,1], 
+                 point.y=species_list[[3]][1,2], 
+                 pol.x=shapefile@polygons[[i]]@Polygons[[1]]@coords[,1], 
+                 pol.y=shapefile@polygons[[i]]@Polygons[[1]]@coords[,2],
+                 mode.checked=FALSE))
+}
+
+```
+
+Some  random selection of points.
+```{r}
+
+choose_cells <- function(ngrps, npoints){
+  random_splits <- sample(1:npoints, replace=FALSE)
+  random_splits2 <- random_splits
+  
+  random_sp_list <- list(NULL)
+  for (i in 1:(ngrps-1)){
+    random_sp_list[[i]] <- random_splits2[c(1:floor(npoints/ngrps))]
+    random_splits2 <- random_splits2[-c(1:floor(npoints/ngrps))]
+  }
+  
+  random_sp_list[[ngrps]] <- random_splits2
+  
+  list(random_sp_list=random_sp_list, ngrps=ngrps)
+}
+
+map_selection<-function(random_splits){
+  
+  #par(mfrow=c(1,1), mar=c(4,4,1,1), pty="s")
+  mm<-map("worldHires","South Africa", xlim=c(15,33), ylim = c(-35, -21),
+          boundary=T, plot=F)
+  plot(mm$x, mm$y, xlab="Longitude", ylab="Latitude", type="n", xaxt="n", yaxt="n", main="")
+  lines(mm$x, mm$y, xlab="Longitude", ylab="Latitude")
+  
+  xycords <- species_list[[3]][random_splits, ]
+  
+  for (i in 1:length(random_splits)){
+       xx<-make_coords(c(xycords[i,1], xycords[i,2]))
+       polygon(xx[,3], xx[,4], col="grey", border="grey")
+  }
+  
+  # detections <- which(species_list[[2]]$pres_abs ==1)
+  # 
+  # for (i in 1:length(detections)){
+  #      xx<-make_coords(c(species_list[[3]][detections[i],1], species_list[[3]][detections[i],2]))
+  #      polygon(xx[,3], xx[,4], col="red", border="red", cex=.5)
+  # }
+  # 
+  # legend("topleft", legend=c("Sample Locations", "Observed"), pch=rep(15,2), bty="n", col=c("grey","red"))
+
+}
+
+
+par(mfrow=c(2,2), mar=c(4,4,1,1), pty="s")
+mm<-map("worldHires","South Africa", xlim=c(15,33), ylim = c(-35, -21),
+        boundary=T, plot=F)
+plot(mm$x, mm$y, xlab="Longitude", ylab="Latitude", type="n", xaxt="n", yaxt="n", main="")
+lines(mm$x, mm$y, xlab="Longitude", ylab="Latitude")
+
+for (i in 1:805){
+     xx<-make_coords(c(species_list[[3]][i,1], species_list[[3]][i,2]))
+     polygon(xx[,3], xx[,4], col="grey", border="grey")
+}
+ran_pts <- choose_cells(3, 805)
+map_selection(ran_pts$random_sp_list[[1]])
+map_selection(ran_pts$random_sp_list[[2]])
+map_selection(ran_pts$random_sp_list[[3]])
+
+```
+
+
+FITTING THE SPLITS...
+
+```{r}
+require(foreach)
+require(doParallel)
+
+t1_spl<-Sys.time()
+
+  ngrps <- 15
+
+  #Set the prior distributions used
+  sigma_inv_beta_spl<- (diag(nbetas)/100)/ngrps #prior inverse covariance for beta
+  sigma_inv_alpha_spl<- (diag(nalphas)/100)/ngrps #prior inverse covariance for alpha
+
+  #set.seed(1000)
+  random_splits <- sample(1:805, replace=FALSE)
+  random_splits2 <- random_splits
+  
+  random_sp_list <- list(NULL)
+  for (i in 1:(ngrps-1)){
+    random_sp_list[[i]] <- random_splits2[c(1:floor(805/ngrps))]
+    random_splits2 <- random_splits2[-c(1:floor(805/ngrps))]
+  }
+  
+  random_sp_list[[ngrps]] <- random_splits2
+  
+  cl <- makeCluster(4)
+  registerDoParallel(cl)
+  
+  occ_splits <- foreach(ii=1:ngrps, .inorder=TRUE, .packages = "RcppoccDev")%dopar%{
+  
+    random_split <- random_sp_list[[ii]]
+    Xmat_spl <- x1x2[random_split,]
+    
+    Wmat_spl <- list( nspp=species_list[[5]][random_split,1:50] )
+    
+    yobs_spl <- species_list[[2]]$y[random_split,]
+    
+    data_list_spl <- list(W=Wmat_spl, X=Xmat_spl, y= yobs_spl)
+    
+    #increase 'ndraws' to a larger number 
+    PGocc(formula= y  ~ PC1 + PC2 ~ nspp,
+          data_inputs = data_list_spl,
+          ndraws=nsims,
+          alpha_m=alpha_m, beta_m=beta_m,
+          sigma_inv_alpha_p=sigma_inv_alpha_spl,
+          sigma_inv_beta_p=sigma_inv_beta_spl,
+          percent_burn_in=0.5,
+          store_z=TRUE)
+  }
+  stopCluster(cl)
+  
+  #--------------------------------------
+  #these calculations could be made faster!
+  V_alphas <- matrix(0, nalphas, nalphas)
+  C_alphas <-  matrix(0, nalphas, 1)
+  
+  for (ii in 1:ngrps){
+    temp <- solve( var(t(occ_splits[[ii]]$alpha)) )
+    V_alphas <- V_alphas + temp
+    C_alphas <- C_alphas + temp%*%matrix(apply(occ_splits[[ii]]$alpha, 1, mean), ncol=1)
+  }
+  V_alphas <- solve(V_alphas)
+  M_alphas <- V_alphas%*%C_alphas
+  
+  
+  V_betas <- matrix(0, nbetas, nbetas)
+  C_betas <-  matrix(0, nbetas, 1)
+  
+  for (ii in 1:ngrps){
+    temp <- solve( var(t(occ_splits[[ii]]$beta)) )
+    V_betas <- V_betas + temp
+    C_betas <- C_betas + temp%*%matrix(apply(occ_splits[[ii]]$beta, 1, mean), ncol=1)
+  }
+  V_betas <- solve(V_betas)
+  M_betas <- V_betas%*%C_betas
+  #--------------------------------------
+t2_spl<-Sys.time()
+t2_spl - t1_spl
+```
+
+```{r}
+pdf("ToomuchSubsampling.pdf")
+par(mfrow=c(2,2), mar=c(1,1,.1,.1))
+for (i in 1:3){
+  map_selection(random_sp_list[[i]])}
+
+mm<-map("worldHires","South Africa", xlim=c(15,33), ylim = c(-35, -21),
+        boundary=T, plot=F)
+plot(mm$x, mm$y, xlab="Longitude", ylab="Latitude", type="n", xaxt="n", yaxt="n", main="")
+lines(mm$x, mm$y, xlab="Longitude", ylab="Latitude")
+
+for (i in 1:805){
+     xx<-make_coords(c(species_list[[3]][i,1], species_list[[3]][i,2]))
+     polygon(xx[,3], xx[,4], col="grey", border="grey")
+}
+dev.off()
+
+```
+
+```{r}
+pdf("CapeWeaverConcensus4_a.pdf")
+par(mfrow=c(1,2), pty="s", mar=c(4,4,.5,.5))
+
+for (jj in 1:2){
+  
+  min.a <- min(c(occ_splits[[1]]$alpha[jj,]))
+  for (ii in 2:ngrps){
+    min.a <- min(c(min.a, occ_splits[[ii]]$alpha[jj,]) )
+  } 
+  max.a <- max(c(occ_splits[[1]]$alpha[jj,]))
+  for (ii in 2:ngrps){
+    max.a <- max(c(max.a, occ_splits[[ii]]$alpha[jj,]) )
+  } 
+
+  plot(density(nonspat_occ$alpha[jj,]), xlab=bquote(alpha[.(jj-1)]), main="", xlim=c(min.a, max.a))
+  legend("topright", legend=c("F","C"), lwd=rep(2,2), col=c("blue", "red"), bty="n", cex=.7)
+
+  for (ii in 1:ngrps){
+    lines(density(occ_splits[[ii]]$alpha[jj,]), main=bquote(alpha[.(jj-1)]), col=ii+1)
+  }
+
+  xs <- seq(from=min(nonspat_occ$alpha[jj,]), max(nonspat_occ$alpha[jj,]), length.out = 500)
+  lines(xs, dnorm(xs, mean=M_alphas[jj], sd=sqrt(V_alphas[jj,jj])), lwd=2, col="red")
+}
+dev.off()
+#plot(0, xaxt = 'n', yaxt = 'n', bty = 'n', pch = '', ylab = '', xlab = '')
+
+
+pdf("CapeWeaverConcensus4_b.pdf")
+par(mfrow=c(2,2), pty="s", mar=c(4,4,.5,.5))
+for (jj in 1:3){
+  
+  min.b <- min(c(occ_splits[[1]]$beta[jj,]))
+  for (ii in 2:ngrps){
+    min.b <- min(c(min.b, occ_splits[[ii]]$beta[jj,]) )
+  } 
+  max.b <- max(c(occ_splits[[1]]$beta[jj,]))
+  for (ii in 2:ngrps){
+    max.b <- max(c(max.b, occ_splits[[ii]]$beta[jj,]) )
+  } 
+
+  plot(density(nonspat_occ$beta[jj,]), xlab=bquote(beta[.(jj-1)]), main="", xlim=c(min.b, max.b))
+  legend("topright", legend=c("F","C"), lwd=rep(2,2), col=c("blue", "red"), bty="n", cex=.7)
+
+  for (ii in 1:ngrps){lines(density(occ_splits[[ii]]$beta[jj,]), main=bquote(beta[.(jj-1)]), col=ii+1)}
+
+  xs <- seq(from=min(nonspat_occ$beta[jj,]), max(nonspat_occ$beta[jj,]), length.out = 500)
+  lines(xs, dnorm(xs, mean=M_betas[jj], sd=sqrt(V_betas[jj,jj])), lwd=2, col="red")
+}
+dev.off()
+
+```
+
