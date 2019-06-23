@@ -11,9 +11,6 @@ The following package can be installed as follows:
    (i.e. install.packages("devtools"))
 2. Now type the following R lines of code in your R workspace: 
 
-require(devtools)
-install_github("AllanClark/Rcppocc")
-=======
 require(devtools)  
 install_github("AllanClark/Rcppocc")
 
