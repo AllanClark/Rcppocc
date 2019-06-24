@@ -1,4 +1,4 @@
-Package: RcppoccDev
+Package: Rcppocc
 Type: Package
 Title: Fits various Bayesian occupancy models assuming all regression effects 
   uses a logit link function

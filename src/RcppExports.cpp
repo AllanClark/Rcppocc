@@ -8,7 +8,7 @@ using namespace Rcpp;
 
 // logitoccDA4
 List logitoccDA4(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector siteids, int ndraws, arma::vec ysum, arma::vec z, arma::vec nvisits, arma::mat alpha_m, arma::mat beta_m, arma::mat sigma_inv_alpha_p, arma::mat sigma_inv_beta_p);
-RcppExport SEXP _RcppoccDev_logitoccDA4(SEXP XSEXP, SEXP YSEXP, SEXP W_vbSEXP, SEXP siteidsSEXP, SEXP ndrawsSEXP, SEXP ysumSEXP, SEXP zSEXP, SEXP nvisitsSEXP, SEXP alpha_mSEXP, SEXP beta_mSEXP, SEXP sigma_inv_alpha_pSEXP, SEXP sigma_inv_beta_pSEXP) {
+RcppExport SEXP _Rcppocc_logitoccDA4(SEXP XSEXP, SEXP YSEXP, SEXP W_vbSEXP, SEXP siteidsSEXP, SEXP ndrawsSEXP, SEXP ysumSEXP, SEXP zSEXP, SEXP nvisitsSEXP, SEXP alpha_mSEXP, SEXP beta_mSEXP, SEXP sigma_inv_alpha_pSEXP, SEXP sigma_inv_beta_pSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -30,7 +30,7 @@ END_RCPP
 }
 // logitoccPG3
 List logitoccPG3(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector siteids, int ndraws, arma::vec ysum, arma::vec z, arma::vec nvisits, arma::mat alpha_m, arma::mat beta_m, arma::mat sigma_inv_alpha_p, arma::mat sigma_inv_beta_p, double percent_burn_in);
-RcppExport SEXP _RcppoccDev_logitoccPG3(SEXP XSEXP, SEXP YSEXP, SEXP W_vbSEXP, SEXP siteidsSEXP, SEXP ndrawsSEXP, SEXP ysumSEXP, SEXP zSEXP, SEXP nvisitsSEXP, SEXP alpha_mSEXP, SEXP beta_mSEXP, SEXP sigma_inv_alpha_pSEXP, SEXP sigma_inv_beta_pSEXP, SEXP percent_burn_inSEXP) {
+RcppExport SEXP _Rcppocc_logitoccPG3(SEXP XSEXP, SEXP YSEXP, SEXP W_vbSEXP, SEXP siteidsSEXP, SEXP ndrawsSEXP, SEXP ysumSEXP, SEXP zSEXP, SEXP nvisitsSEXP, SEXP alpha_mSEXP, SEXP beta_mSEXP, SEXP sigma_inv_alpha_pSEXP, SEXP sigma_inv_beta_pSEXP, SEXP percent_burn_inSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -53,7 +53,7 @@ END_RCPP
 }
 // logitoccPG3_z
 List logitoccPG3_z(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector siteids, int ndraws, arma::vec ysum, arma::vec z, arma::vec nvisits, arma::mat alpha_m, arma::mat beta_m, arma::mat sigma_inv_alpha_p, arma::mat sigma_inv_beta_p, double percent_burn_in);
-RcppExport SEXP _RcppoccDev_logitoccPG3_z(SEXP XSEXP, SEXP YSEXP, SEXP W_vbSEXP, SEXP siteidsSEXP, SEXP ndrawsSEXP, SEXP ysumSEXP, SEXP zSEXP, SEXP nvisitsSEXP, SEXP alpha_mSEXP, SEXP beta_mSEXP, SEXP sigma_inv_alpha_pSEXP, SEXP sigma_inv_beta_pSEXP, SEXP percent_burn_inSEXP) {
+RcppExport SEXP _Rcppocc_logitoccPG3_z(SEXP XSEXP, SEXP YSEXP, SEXP W_vbSEXP, SEXP siteidsSEXP, SEXP ndrawsSEXP, SEXP ysumSEXP, SEXP zSEXP, SEXP nvisitsSEXP, SEXP alpha_mSEXP, SEXP beta_mSEXP, SEXP sigma_inv_alpha_pSEXP, SEXP sigma_inv_beta_pSEXP, SEXP percent_burn_inSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -76,7 +76,7 @@ END_RCPP
 }
 // logitoccSPAT
 List logitoccSPAT(arma::mat X, arma::mat W_vb, arma::mat Y, arma::mat z, arma::vec ysum, arma::vec nvisits, arma::mat K, arma::mat Minv, double n_obs, NumericVector siteids, arma::vec unsurveyed_ind, double tau_0, double a_tau, double b_tau, arma::mat alpha_m, arma::mat beta_m, arma::mat sigma_inv_alpha_p, arma::mat sigma_inv_beta_p, int ndraws, double percent_burn_in);
-RcppExport SEXP _RcppoccDev_logitoccSPAT(SEXP XSEXP, SEXP W_vbSEXP, SEXP YSEXP, SEXP zSEXP, SEXP ysumSEXP, SEXP nvisitsSEXP, SEXP KSEXP, SEXP MinvSEXP, SEXP n_obsSEXP, SEXP siteidsSEXP, SEXP unsurveyed_indSEXP, SEXP tau_0SEXP, SEXP a_tauSEXP, SEXP b_tauSEXP, SEXP alpha_mSEXP, SEXP beta_mSEXP, SEXP sigma_inv_alpha_pSEXP, SEXP sigma_inv_beta_pSEXP, SEXP ndrawsSEXP, SEXP percent_burn_inSEXP) {
+RcppExport SEXP _Rcppocc_logitoccSPAT(SEXP XSEXP, SEXP W_vbSEXP, SEXP YSEXP, SEXP zSEXP, SEXP ysumSEXP, SEXP nvisitsSEXP, SEXP KSEXP, SEXP MinvSEXP, SEXP n_obsSEXP, SEXP siteidsSEXP, SEXP unsurveyed_indSEXP, SEXP tau_0SEXP, SEXP a_tauSEXP, SEXP b_tauSEXP, SEXP alpha_mSEXP, SEXP beta_mSEXP, SEXP sigma_inv_alpha_pSEXP, SEXP sigma_inv_beta_pSEXP, SEXP ndrawsSEXP, SEXP percent_burn_inSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -106,7 +106,7 @@ END_RCPP
 }
 // logitoccSPATsplit
 List logitoccSPATsplit(arma::mat X, arma::mat W_vb, arma::mat Y, arma::mat z, arma::vec ysum, arma::vec nvisits, arma::mat K, arma::mat Minv, double n_obs, NumericVector siteids, arma::vec unsurveyed_ind, double tau_0, double a_tau, double b_tau, arma::mat alpha_m, arma::mat beta_m, arma::mat sigma_inv_alpha_p, arma::mat sigma_inv_beta_p, int ndraws, double percent_burn_in);
-RcppExport SEXP _RcppoccDev_logitoccSPATsplit(SEXP XSEXP, SEXP W_vbSEXP, SEXP YSEXP, SEXP zSEXP, SEXP ysumSEXP, SEXP nvisitsSEXP, SEXP KSEXP, SEXP MinvSEXP, SEXP n_obsSEXP, SEXP siteidsSEXP, SEXP unsurveyed_indSEXP, SEXP tau_0SEXP, SEXP a_tauSEXP, SEXP b_tauSEXP, SEXP alpha_mSEXP, SEXP beta_mSEXP, SEXP sigma_inv_alpha_pSEXP, SEXP sigma_inv_beta_pSEXP, SEXP ndrawsSEXP, SEXP percent_burn_inSEXP) {
+RcppExport SEXP _Rcppocc_logitoccSPATsplit(SEXP XSEXP, SEXP W_vbSEXP, SEXP YSEXP, SEXP zSEXP, SEXP ysumSEXP, SEXP nvisitsSEXP, SEXP KSEXP, SEXP MinvSEXP, SEXP n_obsSEXP, SEXP siteidsSEXP, SEXP unsurveyed_indSEXP, SEXP tau_0SEXP, SEXP a_tauSEXP, SEXP b_tauSEXP, SEXP alpha_mSEXP, SEXP beta_mSEXP, SEXP sigma_inv_alpha_pSEXP, SEXP sigma_inv_beta_pSEXP, SEXP ndrawsSEXP, SEXP percent_burn_inSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -136,15 +136,15 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_RcppoccDev_logitoccDA4", (DL_FUNC) &_RcppoccDev_logitoccDA4, 12},
-    {"_RcppoccDev_logitoccPG3", (DL_FUNC) &_RcppoccDev_logitoccPG3, 13},
-    {"_RcppoccDev_logitoccPG3_z", (DL_FUNC) &_RcppoccDev_logitoccPG3_z, 13},
-    {"_RcppoccDev_logitoccSPAT", (DL_FUNC) &_RcppoccDev_logitoccSPAT, 20},
-    {"_RcppoccDev_logitoccSPATsplit", (DL_FUNC) &_RcppoccDev_logitoccSPATsplit, 20},
+    {"_Rcppocc_logitoccDA4", (DL_FUNC) &_Rcppocc_logitoccDA4, 12},
+    {"_Rcppocc_logitoccPG3", (DL_FUNC) &_Rcppocc_logitoccPG3, 13},
+    {"_Rcppocc_logitoccPG3_z", (DL_FUNC) &_Rcppocc_logitoccPG3_z, 13},
+    {"_Rcppocc_logitoccSPAT", (DL_FUNC) &_Rcppocc_logitoccSPAT, 20},
+    {"_Rcppocc_logitoccSPATsplit", (DL_FUNC) &_Rcppocc_logitoccSPATsplit, 20},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_RcppoccDev(DllInfo *dll) {
+RcppExport void R_init_Rcppocc(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }
