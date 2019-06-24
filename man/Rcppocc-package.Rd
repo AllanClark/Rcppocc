@@ -1,9 +1,9 @@
-\name{RcppoccDev-package}
-\alias{RcppoccDev-package}
-\alias{RcppoccDev}
+\name{Rcppocc-package}
+\alias{Rcppocc-package}
+\alias{Rcppocc}
 \docType{package}
 
-\title{RcppoccDev}
+\title{Rcppocc}
 
 \description{Fits various Bayesian occupancy models (nonspatial and spatial) assuming all regression effects uses a logit link function.}
 
