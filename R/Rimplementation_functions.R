@@ -1,5 +1,7 @@
 Sys.setenv("PKG_CXXFLAGS"="-std=c++11")
 
+temp2 <- function(){}
+
 vb_Designs_check<-function(formula, Names){
      #perform some checks on the design matrices
      #check that the names in the formula call are in the dataframes provided
