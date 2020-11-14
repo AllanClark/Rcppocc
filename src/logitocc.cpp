@@ -3,9 +3,6 @@
 #include <math.h>
 #include <omp.h>
 
-#include "Rfast.h"
-#include </Users/allanclark/Documents/AllanClark/Stats/Research/Clark_AE/PackagesDevelopment/TaruYovna2019/Rcppocc/inst/include/Rfast/matrix.hpp>
-
 #include "RNG.h"
 #include "PolyaGamma.h"
 #include <R_ext/Utils.h>
