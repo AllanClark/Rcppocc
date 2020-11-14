@@ -8,7 +8,7 @@ The function undertakes MCMC sampling of the parameters of a single-season Bayes
 }
 
 \usage{
-PGocc(formula, data_inputs, ndraws, alpha_m, beta_m, sigma_inv_alpha_p, sigma_inv_beta_p)
+PGocc(formula, data_inputs, ndraws, alpha_m, beta_m, sigma_inv_alpha_p, sigma_inv_beta_p, store_z)
 }
 \arguments{
   \item{formula }{ - Double right-hand side formula describing covariates of detection and occupancy in that order.}
@@ -31,6 +31,7 @@ e.g. Suppose \code{W} contained three dataframes \code{W1}, \code{W2} and \code{
   \item{sigma_inv_alpha_p }{ - The alpha precision matrix (i.e. the inverse of the covariance matrix).}
   \item{sigma_inv_beta_p }{ - The beta precision matrix.}
   \item{percent_burn_in }{ - The percentage of 'ndraws' used as burn-in samples. The argument entered should be between 0.0 and 1.0. No check however is done to assess whether the user has entered the correct argument here. }
+  \item{store_z }{ - A logical. store_z==TRUE indicates that the 'z' and 'psi' samples are stored.}
 }
 \details{
 The function undertakes MCMC sampling of the parameters of a single-season Bayesian occupancy model that uses Polya-Gamma random variables.
