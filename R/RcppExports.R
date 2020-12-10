@@ -21,14 +21,6 @@ setCubeslices <- function(K) {
     .Call(`_Rcppocc_setCubeslices`, K)
 }
 
-setCubeslices_p <- function(K, ncores) {
-    .Call(`_Rcppocc_setCubeslices_p`, K, ncores)
-}
-
-cross_p <- function(S, D, ncores) {
-    .Call(`_Rcppocc_cross_p`, S, D, ncores)
-}
-
 multiplybyconstants <- function(S, Dv) {
     .Call(`_Rcppocc_multiplybyconstants`, S, Dv)
 }
@@ -39,10 +31,6 @@ logitoccDA4 <- function(X, Y, W_vb, siteids, ndraws, ysum, z, nvisits, alpha_m, 
 
 rpg5 <- function(scale) {
     .Call(`_Rcppocc_rpg5`, scale)
-}
-
-rpg5_openmp <- function(scale, ncores) {
-    .Call(`_Rcppocc_rpg5_openmp`, scale, ncores)
 }
 
 logitoccPG3 <- function(X, Y, W_vb, siteids, ndraws, ysum, z, nvisits, alpha_m, beta_m, sigma_inv_alpha_p, sigma_inv_beta_p, percent_burn_in) {
@@ -65,22 +53,6 @@ quadform2 <- function(X, dmat) {
     .Call(`_Rcppocc_quadform2`, X, dmat)
 }
 
-matrix_multiplication <- function(x, y, ncores) {
-    .Call(`_Rcppocc_matrix_multiplication`, x, y, ncores)
-}
-
-quadform3 <- function(X, dmat, ncores) {
-    .Call(`_Rcppocc_quadform3`, X, dmat, ncores)
-}
-
-xtx <- function(x, ncores) {
-    .Call(`_Rcppocc_xtx`, x, ncores)
-}
-
-quadform4 <- function(X, dmat, ncores) {
-    .Call(`_Rcppocc_quadform4`, X, dmat, ncores)
-}
-
 rbinom2 <- function(prob) {
     .Call(`_Rcppocc_rbinom2`, prob)
 }
@@ -101,24 +73,12 @@ transpose_sq <- function(x) {
     .Call(`_Rcppocc_transpose_sq`, x)
 }
 
-transpose_notsq <- function(x, ncores) {
-    .Call(`_Rcppocc_transpose_notsq`, x, ncores)
-}
-
 Transpose2 <- function(x) {
     .Call(`_Rcppocc_Transpose2`, x)
 }
 
-rmatmult2 <- function(X, Dv, nsamps, ncores) {
-    .Call(`_Rcppocc_rmatmult2`, X, Dv, nsamps, ncores)
-}
-
 logitoccSPAT <- function(X, W_vb, Y, z, ysum, nvisits, K, Minv, n_obs, siteids, unsurveyed_ind, tau_0, a_tau, b_tau, alpha_m, beta_m, sigma_inv_alpha_p, sigma_inv_beta_p, ndraws, percent_burn_in) {
     .Call(`_Rcppocc_logitoccSPAT`, X, W_vb, Y, z, ysum, nvisits, K, Minv, n_obs, siteids, unsurveyed_ind, tau_0, a_tau, b_tau, alpha_m, beta_m, sigma_inv_alpha_p, sigma_inv_beta_p, ndraws, percent_burn_in)
-}
-
-logitoccSPAT2 <- function(X, W_vb, Y, z, ysum, nvisits, K, Minv, n_obs, siteids, unsurveyed_ind, tau_0, a_tau, b_tau, alpha_m, beta_m, sigma_inv_alpha_p, sigma_inv_beta_p, ndraws, percent_burn_in, ncores) {
-    .Call(`_Rcppocc_logitoccSPAT2`, X, W_vb, Y, z, ysum, nvisits, K, Minv, n_obs, siteids, unsurveyed_ind, tau_0, a_tau, b_tau, alpha_m, beta_m, sigma_inv_alpha_p, sigma_inv_beta_p, ndraws, percent_burn_in, ncores)
 }
 
 logitoccSPAT3 <- function(X, W_vb, Y, z, ysum, nvisits, K, Minv, n_obs, siteids, unsurveyed_ind, tau_0, a_tau, b_tau, alpha_m, beta_m, sigma_inv_alpha_p, sigma_inv_beta_p, ndraws, percent_burn_in) {
