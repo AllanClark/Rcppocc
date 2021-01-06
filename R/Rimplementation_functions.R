@@ -314,8 +314,7 @@ writeLines("
 occSPATlogit <- function(detection.model, occupancy.model, spatial.model,
                          so.data,
                          prior,
-                         control,
-                         choice=1){
+                         control){
   #Date = 6 Jan 2021
   #Updated - AE Clark
 
