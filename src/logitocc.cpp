@@ -23,7 +23,7 @@ using namespace RcppParallel;
 
 // [[Rcpp::depends("RcppArmadillo")]]
 arma::mat mvrnormArma(int n, arma::vec mu, arma::mat sigma) {
-  /* Sampling from a Gaussain (mutivariate) distribution
+  /* Sampling from a Gaussian (mutivariate) distribution
    * output is row vector
    */
   int ncols = sigma.n_cols;
@@ -33,7 +33,7 @@ arma::mat mvrnormArma(int n, arma::vec mu, arma::mat sigma) {
 
 // [[Rcpp::depends("RcppArmadillo")]]
 arma::mat mvrnormArma2(int n, arma::vec mu, arma::mat sigma) {
-  /* Sampling from a Gaussain (mutivariate) distribution
+  /* Sampling from a Gaussian (mutivariate) distribution
    * output is column vector
    */
   int ncols = sigma.n_cols;
@@ -45,7 +45,7 @@ arma::mat mvrnormArma2(int n, arma::vec mu, arma::mat sigma) {
 
 // [[Rcpp::depends("RcppArmadillo")]]
 arma::mat mvrnormArma3(int n, arma::vec A, arma::mat invSigma) {
-  /* Sampling from a Gaussain (mutivariate) distribution
+  /* Sampling from a Gaussian (mutivariate) distribution
    * output is column vector
    */
   int ncols = invSigma.n_cols;
