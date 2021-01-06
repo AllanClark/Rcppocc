@@ -5,3 +5,5 @@ importFrom(Rcpp, evalCpp)
 #added in for RcppParallel!
 importFrom(RcppParallel, RcppParallelLibs)
 
+#for the piping operator
+importFrom(dplyr,"%>%")

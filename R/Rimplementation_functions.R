@@ -417,16 +417,6 @@ occSPATlogit <- function(detection.model, occupancy.model, spatial.model,
 #--------------------------------------------------------------------------
 #--------------------------------------------------------------------------
 
-# Dummy function
-
-dummyfn <- function(){
-  print("dummy")
-
-  numFunc()
-}
-
-
-
 # Binomial model implementations
 
 #rewriting the code so that it has a similar form to the stocc package!
@@ -434,7 +424,9 @@ dummyfn <- function(){
 occSPATlogitBinom <- function(detection.model, occupancy.model, spatial.model,
                               so.data,
                               prior,
-                              control,stat=1 , k=1){
+                              control,
+                              stat=1 ,
+                              k=1){
   #Date = 30 Aug 2018
 
   cat("\n ---------------------------------------------------------------------------------------")
@@ -573,16 +565,14 @@ occSPATlogitBinom <- function(detection.model, occupancy.model, spatial.model,
                     ndraws, percent_burn_in)
 }
 
-#--------------------------------------------------------------------------
-#--------------------------------------------------------------------------
-#--------------------------------------------------------------------------
-
 #rewriting the code so that it has a similar form to the stocc package!
 #this function is used to fit spatial occupancy models using binomial detection
 occSPATlogitBinomPG <- function(detection.model, occupancy.model, spatial.model,
                                 so.data,
                                 prior,
-                                control,stat=1,k=1){
+                                control,
+                                stat=1,
+                                k=1){
   #Date = 30 Aug 2018
 
   cat("\n ---------------------------------------------------------------------------------------")
@@ -734,7 +724,9 @@ occSPATlogitBinomPG <- function(detection.model, occupancy.model, spatial.model,
 occSPATlogitCons<- function(detection.model, occupancy.model, spatial.model,
                             so.data,
                             prior,
-                            control, k=3,stat=1){
+                            control,
+                            stat=1,
+                            k=3){
   #Date = 30 Aug 2018
 
   cat("\n ---------------------------------------------------------------------------------------")
@@ -836,7 +828,9 @@ occSPATlogitCons<- function(detection.model, occupancy.model, spatial.model,
 occSPATlogitConsPG <- function(detection.model, occupancy.model, spatial.model,
                                so.data,
                                prior,
-                               control, k=3,stat=1){
+                               control,
+                               stat=1,
+                               k=3){
   #Date = 30 Aug 2018
 
   cat("\n ---------------------------------------------------------------------------------------")
@@ -928,6 +922,10 @@ occSPATlogitConsPG <- function(detection.model, occupancy.model, spatial.model,
   return(real_locc)
 
 }
+
+#--------------------------------------------------------------------------
+#--------------------------------------------------------------------------
+#--------------------------------------------------------------------------
 
 dMvn <- function(X,mu,Sigma) {
   k <- ncol(X)

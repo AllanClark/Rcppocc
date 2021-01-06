@@ -1,16 +1,14 @@
-\name{occSPATlogit}
-\alias{occSPATlogit}
+\name{occSPATlogitBinom}
+\alias{occSPATlogitBinom}
 
-\title{occSPATlogit - single-season Bayesian spatial occupancy model using Polya-Gamma random variables.}
+\title{occSPATlogitBinom - single-season Bayesian spatial occupancy (Binomial) model using Polya-Gamma random variables.}
 
 \description{
-The function undertakes MCMC sampling of the parameters of a single-season Bayesian Restricted spatial regression model that uses Polya-Gamma random variables.
-
-The arguments used are MOSTLY the same as those for the 'spatial.occupancy' function in the 'stocc' package although the 'initial.values' argument is not included at present.
+The function undertakes MCMC sampling of the parameters of a single-season Bayesian spatial occupancy (Binomial) model that uses Polya-Gamma random variables. Here the detection process is modelled as a Binomial random variable.
 }
 
 \usage{
-occSPATlogit(detection.model, occupancy.model, spatial.model, so.data, prior, control)
+occSPATlogitBinom(detection.model, occupancy.model, spatial.model, so.data, prior, control, stat, k)
 }
 \arguments{
 \item{detection.model}{A formula object describing the detection portion of
@@ -54,26 +52,15 @@ UNDERTAKEN for the MCMC sample, and (2) \code{percent_burn_in} is the percentage
 The argument entered should be between 0.0 and 1.0. No check however is done to assess whether the user has entered the correct argument here. Note: The user has to thin the sample afterwards (if required).
 
 No thinning is undertaken.}
-}
+\item{stat}{The detection covariate information is aggregated across the number of surveys at a site. \code{stat} allows the user to choose the method of aggregation for the detection covariates. The default is set to \code{1}, which represents the mean, and the other option is 2, which represents the median of the covariates at the site.}
 
+\item{k}{BLAH BLAH BLAH}
+}
 \details{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+The function undertakes MCMC sampling of the parameters of a single-season Bayesian spatial occupancy (Binomial) model that uses Polya-Gamma random variables. Here the detection process is modelled as a Binomial random variable. Specifically we assume that \eqn{y[i]|z[i] ~ Binom(K[i], z[i]p[i])} where \eqn{K[i]} and \eqn{p[i]} are ther number of surveys to site \eqn{i} and \eqn{p[i]} is the conditional detection probability for site \eqn{i}.
 }
 \value{
-\item{ }{ - The MCMC samples are returned as a named list. The elements of the list are \code{alpha}, \code{beta}, \code{theta}, \code{tau_mat}, \code{real.occ} and \code{psi}.
-
-\code{alpha} = the regression effects of the detection process;
-
-\code{beta} = the regression effects of the occupancy process;
-
-\code{theta} = the regression effects of the spatial component;
-
-\code{tau_mat} = the spatial precision parameter;
-
-\code{real.occ} = the estimate of the true occupancy variable;
-
-\code{psi} = conditional occupancy probabilities.}
-
+\item{ }{  - The MCMC samples are returned as a named list with entries 'alpha' and 'beta'. Both are matrices witht the number of rows equal to the number of regression effects.}
 }
 \references{
 %% ~put references to the literature/web site here ~
@@ -160,38 +147,29 @@ nthin <- 1
 
 t1_logit <- proc.time()
 
-spat_logit <- occSPATlogit(detection.model= ~ nspp, occupancy.model= ~ PC1 + PC2,
-                                 spatial.model = list(threshold = 0.36,
-                                 moran.cut = numSpatre, rho=1),
-                                 so.data = Make.so.data,
-                                 prior = list(a.tau = 0.5, b.tau = 0.0005,
+spat_logitBin <- occSPATlogitBinom(detection.model= ~ nspp, occupancy.model= ~ PC1 + PC2,
+                                  spatial.model = list(threshold = 0.36,
+                                  moran.cut = numSpatre, rho=1),
+                                  so.data = Make.so.data,
+                                  prior = list(a.tau = 0.5, b.tau = 0.0005,
                                               tau=1,
                                               Q.d=sigma_inv_alpha_p,
                                               mu.d = alpha_m,
                                               Q.o=sigma_inv_beta_p,
                                               mu.o = beta_m),
-                                 control = list(ndraws =niter,
-                                 percent_burn_in = 0.5))
+                                  control = list(ndraws =niter,
+                                  percent_burn_in = 0.5),
+                                  stat=1,
+                                  k=1)
 
 t2_logit <- proc.time()
 RcppTimer <- t2_logit-t1_logit
 RcppTimer #in seconds
 #--------------------------------------------------------------------------
 
-names(spat_logit)
-dim(spat_logit$alpha) #note the dimensions! i.e. row matrices
+names(spat_logitBin)
+dim(spat_logitBin$alpha) #note the dimensions! i.e. row matrices
 #--------------------------------------------------------------------------
-
-#not run
-#require(coda)
-#alpha_mcmc <- as.mcmc( t(spat_logit$alpha) )
-#summary(alpha_mcmc)
-#effectiveSize(alpha_mcmc) #the effective sample size
-#
-#par(mfrow=c(2,2))
-#traceplot(alpha_mcmc)
-#densplot(alpha_mcmc)
-#autocorr.plot(alpha_mcmc)
 }
 
 \keyword{ ~kwd1 }

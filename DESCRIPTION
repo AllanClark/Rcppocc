@@ -15,7 +15,8 @@ License: GPL
 Imports: 
   Rcpp (>= 0.12.18), 
   RcppParallel, 
-  stocc
+  stocc,
+  dplyr
 LinkingTo: 
   Rcpp, 
   RcppArmadillo, 
