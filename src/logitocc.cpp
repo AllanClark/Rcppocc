@@ -58,6 +58,7 @@ arma::mat mvrnormArma3(int n, arma::vec A, arma::mat invSigma) {
 /*
  // [[Rcpp::depends("RcppArmadillo")]]
  // [[Rcpp::export]]
+ Openmp not allowed for R4.> anymore
  arma::mat randn_p(int ncols, int n){
 
  randn(ncols, n)
@@ -73,10 +74,10 @@ arma::mat mvrnormArma3(int n, arma::vec A, arma::mat invSigma) {
  */
 
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::export]]
 arma::mat mvrnormArma4(int n, arma::vec A, arma::mat invSigma) {
   /* Sampling from a Gaussian (multivariate) distribution
    * output is column vector
+   * POSSIBLY DELETE LATER
    */
   int ncols = invSigma.n_cols;
   //arma::mat xc = arma::randn(ncols, n);
@@ -102,11 +103,11 @@ arma::mat mvrnormArma4(int n, arma::vec A, arma::mat invSigma) {
 }
 
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::export]]
 arma::mat mvrnormArma5(int n, arma::mat invSigma) {
   /* Sampling from a Gaussian (multivariate) distribution
    * A is a precision matrix
    * output is column vector
+   * POSSIBLY DELETE LATER
    */
   wall_clock timer;
 
@@ -135,10 +136,10 @@ arma::mat mvrnormArma5(int n, arma::mat invSigma) {
 }
 
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::export]]
 arma::mat mvrnormArma6(int n, arma::vec A, arma::mat invSigma) {
   /* Sampling from a Gaussian (multivariate) distribution
    * output is column vector
+   * POSSIBLY DELETE LATER
    */
   //int ncols = invSigma.n_cols;
   //int temp = invSigma.n_cols; //delete later
@@ -146,10 +147,10 @@ arma::mat mvrnormArma6(int n, arma::vec A, arma::mat invSigma) {
 }
 
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::export]]
 void mvrnormArma4_timers(int n, arma::vec A, arma::mat invSigma) {
   /* Sampling from a Gaussian (multivariate) distribution
    * output is column vector
+   * POSSIBLY DELETE LATER
    */
   int ncols = invSigma.n_cols;
   wall_clock timer;
@@ -193,12 +194,10 @@ void mvrnormArma4_timers(int n, arma::vec A, arma::mat invSigma) {
 
 }
 
-
-
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::export]]
 arma::cube setCubeslices(arma::mat K) {
   /* Set cube slices for K'K
+   * POSSIBLY DELETE LATER
    */
 
   int n = K.n_rows;
@@ -218,22 +217,20 @@ arma::cube setCubeslices(arma::mat K) {
   return S;
 }
 
-
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::export]]
 arma::mat multiplybyconstants(arma::mat S, arma::vec Dv) {
   /*double cc = 2.5;
-   arma::mat tt = cc*S;*/
+   arma::mat tt = cc*S;
+   POSSIBLY DELETE LATER*/
 
   arma::mat tt = Dv(0)*S;
   return tt;
 }
 
-
 // [[Rcpp::depends("RcppArmadillo")]]
 double posterior_r3(double x, arma::vec wr, arma::vec sr){
 
-  /*sample the components of the linear gaussian distribution
+  /*sample the components of the linear Gaussian distribution
    * x = z_i_u - log(lambda_beta_i) or y_ij_u - log(lambda_alpha_i)
    * wr and sr are the constants required to approximate the
    * Logistic distribution
@@ -571,7 +568,6 @@ double rpg4(double scale) {
 }
 
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::export]]
 arma::vec rpg5(arma::mat scale) {
   /*C++-only interface to PolyaGamma class
    draws random PG variates from arma::mat
