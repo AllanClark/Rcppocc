@@ -2045,7 +2045,7 @@ List logitoccSPATBINOM(arma::mat X, arma::mat W_vb, arma::mat Y, arma::mat z, ar
                        int ndraws, double percent_burn_in){
 
   /*
-   * Called by the R function, occSPATlogit
+   * Called by the R function, occSPATlogitBinom
    *
    * Some Rcpp notes
    * Some R translations put in brackets at times.
@@ -2201,8 +2201,6 @@ List logitoccSPATBINOM(arma::mat X, arma::mat W_vb, arma::mat Y, arma::mat z, ar
     Ks_theta = Ks*theta; //arma::mat
     //-----------------------------------------------------------------------
 
-
-
     //Rcpp::Rcout << "Posterior samples for theta" << std::endl;
 
     //posterior samples for tau
@@ -2215,9 +2213,7 @@ List logitoccSPATBINOM(arma::mat X, arma::mat W_vb, arma::mat Y, arma::mat z, ar
     tau_mat(0,0) = tau;
     //-----------------------------------------------------------------------
 
-
     //Rcpp::Rcout << "Posterior samples for tau" << std::endl;
-
 
     //convert arma::vec z to NumericVector zNM (but only for surveyed locations)
     NumericVector z_NM = wrap(z.rows(0, const1));
@@ -2261,8 +2257,6 @@ List logitoccSPATBINOM(arma::mat X, arma::mat W_vb, arma::mat Y, arma::mat z, ar
 
     //posterior samples for alpha
 
-
-
     alpha_cov = inv_sympd( sigma_inv_alpha_p + W_iter.t()*diagmat( pg_alpha )*W_iter );
     alpha = mvnrnd(alpha_cov*( W_iter.t()*( ysum_iter - nvisits_iter/2 ) + const3), alpha_cov, 1);
     //alpha = mvrnormArma2(1, alpha_cov*( W_iter.t()*( Y_iter - 0.5 ) + const3), alpha_cov);
@@ -2350,13 +2344,9 @@ List logitoccSPATBINOM(arma::mat X, arma::mat W_vb, arma::mat Y, arma::mat z, ar
                       _["theta"]=post_theta,
                       _["tau"]=post_tau,
                       _["real.occ"]= post_z,
-                      _["psi"]=post_psi,
-                      _["K"]=K);
+                      _["psi"]=post_psi);
 
 }
-
-
-
 
 
 /*
@@ -2374,7 +2364,7 @@ List logitoccSPATBINOMPG(arma::mat X, arma::mat W_vb, arma::mat Y, arma::mat z, 
                          int ndraws, double percent_burn_in){
 
   /*
-   * Called by the R function, occSPATlogit
+   * Called by the R function, occSPATlogitBinomPG
    *
    * Some Rcpp notes
    * Some R translations put in brackets at times.
@@ -2585,15 +2575,10 @@ List logitoccSPATBINOMPG(arma::mat X, arma::mat W_vb, arma::mat Y, arma::mat z, 
 
     //pg_alpha = as<arma::vec>( parallelMatrixRpg(wrap(W_alpha)) ); //arma::vec
 
-
-
-
-
     pg_alpha = rpg7(nvisits_iter, W_alpha); //arma::vec
     //pg_alpha = rnorm7(nvisits_iter, W_alpha);
 
     //posterior samples for alpha
-
 
     alpha_cov = inv_sympd( sigma_inv_alpha_p + W_iter.t()*diagmat( pg_alpha )*W_iter );
     alpha = mvnrnd(alpha_cov*( W_iter.t()*( ysum_iter - nvisits_iter/2 ) + const3), alpha_cov, 1);
@@ -2682,8 +2667,7 @@ List logitoccSPATBINOMPG(arma::mat X, arma::mat W_vb, arma::mat Y, arma::mat z, 
                       _["theta"]=post_theta,
                       _["tau"]=post_tau,
                       _["real.occ"]= post_z,
-                      _["psi"]=post_psi,
-                      _["K"]=K);
+                      _["psi"]=post_psi);
 
 }
 

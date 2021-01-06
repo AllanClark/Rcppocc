@@ -1,14 +1,14 @@
-\name{occSPATlogitBinom}
-\alias{occSPATlogitBinom}
+\name{occSPATlogitBinomPG}
+\alias{occSPATlogitBinomPG}
 
-\title{occSPATlogitBinom - single-season Bayesian spatial occupancy (Binomial) model using a Gaussian approximation to a Polya Gamma distribuition.}
+\title{occSPATlogitBinomPG - single-season Bayesian spatial occupancy (Binomial) model using Polya-Gamma latent variables.}
 
 \description{
-The function undertakes MCMC sampling of the parameters of a single-season Bayesian spatial occupancy (Binomial) model that uses a Gaussian approximation to a Polya Gamma distribuition. Here the detection process is modelled as a Binomial random variable.
+The function undertakes MCMC sampling of the parameters of a single-season Bayesian spatial occupancy (Binomial) model using Polya-Gamma latent variables. Here the detection process is modelled as a Binomial random variable.
 }
 
 \usage{
-occSPATlogitBinom(detection.model, occupancy.model, spatial.model, so.data, prior, control, stat, k)
+occSPATlogitBinomPG(detection.model, occupancy.model, spatial.model, so.data, prior, control, stat, k)
 }
 \arguments{
 \item{detection.model}{A formula object describing the detection portion of
@@ -56,10 +56,10 @@ No thinning is undertaken.}
 
 \item{k}{The number of independent subsets to split the sites in. Default is set to 1 (i.e. no split). For k>1, consensus models will be used.}
 }
-\details{The function undertakes MCMC sampling of the parameters of a single-season Bayesian spatial occupancy (Binomial) model that uses a Gaussian approximation to a Polya Gamma distribuition. Here the detection process is modelled as a Binomial random variable. Specifically we assume that \eqn{y_i | z[i] ~ Binom(K[i], z[i] p[i])} where \eqn{K[i]} and \eqn{p[i]} are ther number of surveys to site \eqn{i} and \eqn{p[i]} is the conditional detection probability for site \eqn{i}.
+\details{The function undertakes MCMC sampling of the parameters of a single-season Bayesian spatial occupancy (Binomial) model that uses Polya-Gamma latent variables. Here the detection process is modelled as a Binomial random variable. Specifically we assume that \eqn{y_i | z[i] ~ Binom(K[i], z[i] p[i])} where \eqn{K[i]} and \eqn{p[i]} are ther number of surveys to site \eqn{i} and \eqn{p[i]} is the conditional detection probability for site \eqn{i}.
 }
 \value{
-\item{ }{  - The MCMC samples are returned as a named list with entries 'alpha', 'beta', 'theta', 'tau', 'real.occ' (the true occupancy status) and 'psi'. }
+\item{ }{  - The MCMC samples are returned as a named list with entries 'alpha' and 'beta'.}
 }
 \references{
 %% ~put references to the literature/web site here ~
@@ -146,28 +146,28 @@ nthin <- 1
 
 t1_logit <- proc.time()
 
-spat_logitBin <- occSPATlogitBinom(detection.model= ~ nspp, occupancy.model= ~ PC1 + PC2,
-                                  spatial.model = list(threshold = 0.36,
-                                  moran.cut = numSpatre, rho=1),
-                                  so.data = Make.so.data,
-                                  prior = list(a.tau = 0.5, b.tau = 0.0005,
+spat_logitPG <- occSPATlogitBinomPG(detection.model= ~ nspp, occupancy.model= ~ PC1 + PC2,
+                                    spatial.model = list(threshold = 0.36,
+                                    moran.cut = numSpatre, rho=1),
+                                    so.data = Make.so.data,
+                                    prior = list(a.tau = 0.5, b.tau = 0.0005,
                                               tau=1,
                                               Q.d=sigma_inv_alpha_p,
                                               mu.d = alpha_m,
                                               Q.o=sigma_inv_beta_p,
                                               mu.o = beta_m),
-                                  control = list(ndraws =niter,
-                                  percent_burn_in = 0.5),
-                                  stat=1,
-                                  k=1)
+                                    control = list(ndraws =niter,
+                                    percent_burn_in = 0.5),
+                                    stat=1,
+                                    k=1)
 
 t2_logit <- proc.time()
 RcppTimer <- t2_logit-t1_logit
 RcppTimer #in seconds
 #--------------------------------------------------------------------------
 
-names(spat_logitBin)
-dim(spat_logitBin$alpha) #note the dimensions! i.e. row matrices
+names(spat_logitPG)
+dim(spat_logitPG$alpha) #note the dimensions! i.e. row matrices
 #--------------------------------------------------------------------------
 }
 

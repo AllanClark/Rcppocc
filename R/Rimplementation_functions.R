@@ -442,10 +442,10 @@ occSPATlogitBinom <- function(detection.model, occupancy.model, spatial.model,
                            levels = levels(site$site.idx))
 
   #### trying something here
-  weaver_grouped <- visit %>%
-    group_by(SiteName) %>%
-    summarize(Y = sum(PAdata),
-              n = n(), nspp = mean(nspp))
+  # weaver_grouped <- visit %>%
+  #   group_by(SiteName) %>%
+  #   dplyr::summarize(Y = sum(PAdata),
+  #             n = n(), nspp = mean(nspp))
 
   W_mean <- NULL
 
@@ -588,10 +588,10 @@ occSPATlogitBinomPG <- function(detection.model, occupancy.model, spatial.model,
                            levels = levels(site$site.idx))
 
   #### trying something here
-  weaver_grouped <- visit %>%
-    group_by(SiteName) %>%
-    summarize(Y = sum(PAdata),
-              n = n(), nspp = mean(nspp))
+  # weaver_grouped <- visit %>%
+  #   group_by(SiteName) %>%
+  #   summarize(Y = sum(PAdata),
+  #             n = n(), nspp = mean(nspp))
 
   W_mean <- NULL
 
