@@ -1383,7 +1383,6 @@ List logitoccSPAT(arma::mat X, arma::mat W_vb, arma::mat Y, arma::mat z, arma::v
 
 
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::export]]
 List logitoccSPAT3(arma::mat X, arma::mat W_vb, arma::mat Y, arma::mat z, arma::vec ysum, arma::vec nvisits,
                    arma::mat K, arma::mat Minv, //arma::mat Mt,
                    double n_obs,
@@ -1394,6 +1393,7 @@ List logitoccSPAT3(arma::mat X, arma::mat W_vb, arma::mat Y, arma::mat z, arma::
                    int ndraws, double percent_burn_in){
 
   /*
+   * USED FOR TESTING!
    * Updated 20 April 2020
    * Called by the R function, occSPATlogit
    *

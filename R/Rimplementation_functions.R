@@ -316,7 +316,7 @@ occSPATlogit <- function(detection.model, occupancy.model, spatial.model,
                          prior,
                          control,
                          choice=1){
-  #Date = 10 April 2020
+  #Date = 6 Jan 2021
   #Updated - AE Clark
 
   cat("\n ---------------------------------------------------------------------------------------")
@@ -404,38 +404,14 @@ occSPATlogit <- function(detection.model, occupancy.model, spatial.model,
   cat("\n Doing sampling! ...\n")
   cat(" ---------------------------------------------------------------------------------------\n")
 
-  if (choice==1){
-    logitoccSPAT(X, W_vb, Y, z, ysum, nvisits,
-                 K, Minv,
-                 n.obs,
-                 siteids, unsurveyed_index,
-                 tau_0, a.tau, b.tau,
-                 alpha_m, beta_m,
-                 sigma_inv_alpha_p, sigma_inv_beta_p,
-                 ndraws, percent_burn_in)
-  }else if (choice==2){
-    #this is the one that will be used
-    ncores <- control$ncores
-
-    logitoccSPAT2(X, W_vb, Y, z, ysum, nvisits,
-                  K, Minv,
-                  n.obs,
-                  siteids, unsurveyed_index,
-                  tau_0, a.tau, b.tau,
-                  alpha_m, beta_m,
-                  sigma_inv_alpha_p, sigma_inv_beta_p,
-                  ndraws, percent_burn_in, ncores)
-  }else{
-    logitoccSPAT3(X, W_vb, Y, z, ysum, nvisits,
-                  K, Minv,
-                  n.obs,
-                  siteids, unsurveyed_index,
-                  tau_0, a.tau, b.tau,
-                  alpha_m, beta_m,
-                  sigma_inv_alpha_p, sigma_inv_beta_p,
-                  ndraws, percent_burn_in)
-  }
-
+  logitoccSPAT(X, W_vb, Y, z, ysum, nvisits,
+               K, Minv,
+               n.obs,
+               siteids, unsurveyed_index,
+               tau_0, a.tau, b.tau,
+               alpha_m, beta_m,
+               sigma_inv_alpha_p, sigma_inv_beta_p,
+               ndraws, percent_burn_in)
 }
 
 #--------------------------------------------------------------------------
