@@ -67,31 +67,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// setCubeslices_p
-arma::cube setCubeslices_p(arma::mat K, int ncores);
-RcppExport SEXP _Rcppocc_setCubeslices_p(SEXP KSEXP, SEXP ncoresSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat >::type K(KSEXP);
-    Rcpp::traits::input_parameter< int >::type ncores(ncoresSEXP);
-    rcpp_result_gen = Rcpp::wrap(setCubeslices_p(K, ncores));
-    return rcpp_result_gen;
-END_RCPP
-}
-// cross_p
-arma::mat cross_p(arma::cube S, arma::vec D, int ncores);
-RcppExport SEXP _Rcppocc_cross_p(SEXP SSEXP, SEXP DSEXP, SEXP ncoresSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::cube >::type S(SSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type D(DSEXP);
-    Rcpp::traits::input_parameter< int >::type ncores(ncoresSEXP);
-    rcpp_result_gen = Rcpp::wrap(cross_p(S, D, ncores));
-    return rcpp_result_gen;
-END_RCPP
-}
 // multiplybyconstants
 arma::mat multiplybyconstants(arma::mat S, arma::vec Dv);
 RcppExport SEXP _Rcppocc_multiplybyconstants(SEXP SSEXP, SEXP DvSEXP) {
@@ -134,18 +109,6 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::mat >::type scale(scaleSEXP);
     rcpp_result_gen = Rcpp::wrap(rpg5(scale));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rpg5_openmp
-arma::vec rpg5_openmp(arma::mat scale, int ncores);
-RcppExport SEXP _Rcppocc_rpg5_openmp(SEXP scaleSEXP, SEXP ncoresSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat >::type scale(scaleSEXP);
-    Rcpp::traits::input_parameter< int >::type ncores(ncoresSEXP);
-    rcpp_result_gen = Rcpp::wrap(rpg5_openmp(scale, ncores));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -232,57 +195,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// matrix_multiplication
-arma::mat matrix_multiplication(arma::mat x, arma::mat y, int ncores);
-RcppExport SEXP _Rcppocc_matrix_multiplication(SEXP xSEXP, SEXP ySEXP, SEXP ncoresSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat >::type x(xSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type y(ySEXP);
-    Rcpp::traits::input_parameter< int >::type ncores(ncoresSEXP);
-    rcpp_result_gen = Rcpp::wrap(matrix_multiplication(x, y, ncores));
-    return rcpp_result_gen;
-END_RCPP
-}
-// quadform3
-arma::mat quadform3(arma::mat X, arma::vec dmat, int ncores);
-RcppExport SEXP _Rcppocc_quadform3(SEXP XSEXP, SEXP dmatSEXP, SEXP ncoresSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type dmat(dmatSEXP);
-    Rcpp::traits::input_parameter< int >::type ncores(ncoresSEXP);
-    rcpp_result_gen = Rcpp::wrap(quadform3(X, dmat, ncores));
-    return rcpp_result_gen;
-END_RCPP
-}
-// xtx
-arma::mat xtx(arma::mat x, int ncores);
-RcppExport SEXP _Rcppocc_xtx(SEXP xSEXP, SEXP ncoresSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat >::type x(xSEXP);
-    Rcpp::traits::input_parameter< int >::type ncores(ncoresSEXP);
-    rcpp_result_gen = Rcpp::wrap(xtx(x, ncores));
-    return rcpp_result_gen;
-END_RCPP
-}
-// quadform4
-arma::mat quadform4(arma::mat X, arma::vec dmat, int ncores);
-RcppExport SEXP _Rcppocc_quadform4(SEXP XSEXP, SEXP dmatSEXP, SEXP ncoresSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type dmat(dmatSEXP);
-    Rcpp::traits::input_parameter< int >::type ncores(ncoresSEXP);
-    rcpp_result_gen = Rcpp::wrap(quadform4(X, dmat, ncores));
-    return rcpp_result_gen;
-END_RCPP
-}
 // rbinom2
 int rbinom2(arma::vec prob);
 RcppExport SEXP _Rcppocc_rbinom2(SEXP probSEXP) {
@@ -339,18 +251,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// transpose_notsq
-arma::mat transpose_notsq(arma::mat x, int ncores);
-RcppExport SEXP _Rcppocc_transpose_notsq(SEXP xSEXP, SEXP ncoresSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat >::type x(xSEXP);
-    Rcpp::traits::input_parameter< int >::type ncores(ncoresSEXP);
-    rcpp_result_gen = Rcpp::wrap(transpose_notsq(x, ncores));
-    return rcpp_result_gen;
-END_RCPP
-}
 // Transpose2
 arma::mat Transpose2(arma::mat x);
 RcppExport SEXP _Rcppocc_Transpose2(SEXP xSEXP) {
@@ -359,20 +259,6 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::mat >::type x(xSEXP);
     rcpp_result_gen = Rcpp::wrap(Transpose2(x));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rmatmult2
-arma::mat rmatmult2(arma::mat X, arma::vec Dv, int nsamps, int ncores);
-RcppExport SEXP _Rcppocc_rmatmult2(SEXP XSEXP, SEXP DvSEXP, SEXP nsampsSEXP, SEXP ncoresSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type Dv(DvSEXP);
-    Rcpp::traits::input_parameter< int >::type nsamps(nsampsSEXP);
-    Rcpp::traits::input_parameter< int >::type ncores(ncoresSEXP);
-    rcpp_result_gen = Rcpp::wrap(rmatmult2(X, Dv, nsamps, ncores));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -403,37 +289,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type ndraws(ndrawsSEXP);
     Rcpp::traits::input_parameter< double >::type percent_burn_in(percent_burn_inSEXP);
     rcpp_result_gen = Rcpp::wrap(logitoccSPAT(X, W_vb, Y, z, ysum, nvisits, K, Minv, n_obs, siteids, unsurveyed_ind, tau_0, a_tau, b_tau, alpha_m, beta_m, sigma_inv_alpha_p, sigma_inv_beta_p, ndraws, percent_burn_in));
-    return rcpp_result_gen;
-END_RCPP
-}
-// logitoccSPAT2
-List logitoccSPAT2(arma::mat X, arma::mat W_vb, arma::mat Y, arma::mat z, arma::vec ysum, arma::vec nvisits, arma::mat K, arma::mat Minv, double n_obs, NumericVector siteids, arma::vec unsurveyed_ind, double tau_0, double a_tau, double b_tau, arma::mat alpha_m, arma::mat beta_m, arma::mat sigma_inv_alpha_p, arma::mat sigma_inv_beta_p, int ndraws, double percent_burn_in, int ncores);
-RcppExport SEXP _Rcppocc_logitoccSPAT2(SEXP XSEXP, SEXP W_vbSEXP, SEXP YSEXP, SEXP zSEXP, SEXP ysumSEXP, SEXP nvisitsSEXP, SEXP KSEXP, SEXP MinvSEXP, SEXP n_obsSEXP, SEXP siteidsSEXP, SEXP unsurveyed_indSEXP, SEXP tau_0SEXP, SEXP a_tauSEXP, SEXP b_tauSEXP, SEXP alpha_mSEXP, SEXP beta_mSEXP, SEXP sigma_inv_alpha_pSEXP, SEXP sigma_inv_beta_pSEXP, SEXP ndrawsSEXP, SEXP percent_burn_inSEXP, SEXP ncoresSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type W_vb(W_vbSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type Y(YSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type z(zSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type ysum(ysumSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type nvisits(nvisitsSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type K(KSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type Minv(MinvSEXP);
-    Rcpp::traits::input_parameter< double >::type n_obs(n_obsSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type siteids(siteidsSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type unsurveyed_ind(unsurveyed_indSEXP);
-    Rcpp::traits::input_parameter< double >::type tau_0(tau_0SEXP);
-    Rcpp::traits::input_parameter< double >::type a_tau(a_tauSEXP);
-    Rcpp::traits::input_parameter< double >::type b_tau(b_tauSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type alpha_m(alpha_mSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type beta_m(beta_mSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type sigma_inv_alpha_p(sigma_inv_alpha_pSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type sigma_inv_beta_p(sigma_inv_beta_pSEXP);
-    Rcpp::traits::input_parameter< int >::type ndraws(ndrawsSEXP);
-    Rcpp::traits::input_parameter< double >::type percent_burn_in(percent_burn_inSEXP);
-    Rcpp::traits::input_parameter< int >::type ncores(ncoresSEXP);
-    rcpp_result_gen = Rcpp::wrap(logitoccSPAT2(X, W_vb, Y, z, ysum, nvisits, K, Minv, n_obs, siteids, unsurveyed_ind, tau_0, a_tau, b_tau, alpha_m, beta_m, sigma_inv_alpha_p, sigma_inv_beta_p, ndraws, percent_burn_in, ncores));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -624,31 +479,21 @@ static const R_CallMethodDef CallEntries[] = {
     {"_Rcppocc_mvrnormArma6", (DL_FUNC) &_Rcppocc_mvrnormArma6, 3},
     {"_Rcppocc_mvrnormArma4_timers", (DL_FUNC) &_Rcppocc_mvrnormArma4_timers, 3},
     {"_Rcppocc_setCubeslices", (DL_FUNC) &_Rcppocc_setCubeslices, 1},
-    {"_Rcppocc_setCubeslices_p", (DL_FUNC) &_Rcppocc_setCubeslices_p, 2},
-    {"_Rcppocc_cross_p", (DL_FUNC) &_Rcppocc_cross_p, 3},
     {"_Rcppocc_multiplybyconstants", (DL_FUNC) &_Rcppocc_multiplybyconstants, 2},
     {"_Rcppocc_logitoccDA4", (DL_FUNC) &_Rcppocc_logitoccDA4, 12},
     {"_Rcppocc_rpg5", (DL_FUNC) &_Rcppocc_rpg5, 1},
-    {"_Rcppocc_rpg5_openmp", (DL_FUNC) &_Rcppocc_rpg5_openmp, 2},
     {"_Rcppocc_logitoccPG3", (DL_FUNC) &_Rcppocc_logitoccPG3, 13},
     {"_Rcppocc_logitoccPG3_z", (DL_FUNC) &_Rcppocc_logitoccPG3_z, 13},
     {"_Rcppocc_quadform", (DL_FUNC) &_Rcppocc_quadform, 3},
     {"_Rcppocc_seq_int", (DL_FUNC) &_Rcppocc_seq_int, 2},
     {"_Rcppocc_quadform2", (DL_FUNC) &_Rcppocc_quadform2, 2},
-    {"_Rcppocc_matrix_multiplication", (DL_FUNC) &_Rcppocc_matrix_multiplication, 3},
-    {"_Rcppocc_quadform3", (DL_FUNC) &_Rcppocc_quadform3, 3},
-    {"_Rcppocc_xtx", (DL_FUNC) &_Rcppocc_xtx, 2},
-    {"_Rcppocc_quadform4", (DL_FUNC) &_Rcppocc_quadform4, 3},
     {"_Rcppocc_rbinom2", (DL_FUNC) &_Rcppocc_rbinom2, 1},
     {"_Rcppocc_rbinom3", (DL_FUNC) &_Rcppocc_rbinom3, 1},
     {"_Rcppocc_matrix_multiplication3", (DL_FUNC) &_Rcppocc_matrix_multiplication3, 2},
     {"_Rcppocc_matrix_multiplication4", (DL_FUNC) &_Rcppocc_matrix_multiplication4, 1},
     {"_Rcppocc_transpose_sq", (DL_FUNC) &_Rcppocc_transpose_sq, 1},
-    {"_Rcppocc_transpose_notsq", (DL_FUNC) &_Rcppocc_transpose_notsq, 2},
     {"_Rcppocc_Transpose2", (DL_FUNC) &_Rcppocc_Transpose2, 1},
-    {"_Rcppocc_rmatmult2", (DL_FUNC) &_Rcppocc_rmatmult2, 4},
     {"_Rcppocc_logitoccSPAT", (DL_FUNC) &_Rcppocc_logitoccSPAT, 20},
-    {"_Rcppocc_logitoccSPAT2", (DL_FUNC) &_Rcppocc_logitoccSPAT2, 21},
     {"_Rcppocc_logitoccSPAT3", (DL_FUNC) &_Rcppocc_logitoccSPAT3, 20},
     {"_Rcppocc_logitoccSPATsplit", (DL_FUNC) &_Rcppocc_logitoccSPATsplit, 20},
     {"_Rcppocc_rpg6", (DL_FUNC) &_Rcppocc_rpg6, 2},

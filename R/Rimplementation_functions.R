@@ -441,11 +441,6 @@ occSPATlogit <- function(detection.model, occupancy.model, spatial.model,
 #--------------------------------------------------------------------------
 #--------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------
-#--------------------------------------------------------------------------
-#--------------------------------------------------------------------------
-
-
 # Dummy function
 
 dummyfn <- function(){
@@ -457,7 +452,6 @@ dummyfn <- function(){
 
 
 # Binomial model implementations
-
 
 #rewriting the code so that it has a similar form to the stocc package!
 #this function is used to fit spatial occupancy models
@@ -606,9 +600,6 @@ occSPATlogitBinom <- function(detection.model, occupancy.model, spatial.model,
 #--------------------------------------------------------------------------
 #--------------------------------------------------------------------------
 #--------------------------------------------------------------------------
-
-
-
 
 #rewriting the code so that it has a similar form to the stocc package!
 #this function is used to fit spatial occupancy models using binomial detection
@@ -762,9 +753,6 @@ occSPATlogitBinomPG <- function(detection.model, occupancy.model, spatial.model,
 
 # Consensus
 
-
-
-
 #rewriting the code so that it has a similar form to the stocc package!
 #this function is used to fit spatial occupancy models
 occSPATlogitCons<- function(detection.model, occupancy.model, spatial.model,
@@ -867,9 +855,6 @@ occSPATlogitCons<- function(detection.model, occupancy.model, spatial.model,
 }
 
 
-
-
-
 #rewriting the code so that it has a similar form to the stocc package!
 #this function is used to fit spatial occupancy models
 occSPATlogitConsPG <- function(detection.model, occupancy.model, spatial.model,
@@ -967,7 +952,6 @@ occSPATlogitConsPG <- function(detection.model, occupancy.model, spatial.model,
   return(real_locc)
 
 }
-
 
 dMvn <- function(X,mu,Sigma) {
   k <- ncol(X)
