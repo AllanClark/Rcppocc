@@ -1008,15 +1008,17 @@ double rgammadouble(int a, double b, double c)
 double rnormdouble(double b, double c)
 {   //from http://iamrandom.com/rnorm-rnormdouble
   //b = mean; c = sd
+  //POSSIBLY DELETE LATER
+
   Rcpp::NumericVector x = rnorm(1,b,c);
   return x(0);
 }
 
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::export]]
 arma::mat quadform(arma::mat X, arma::mat Xt, arma::vec dmat){
   //Calculate the quadratic form X.t()*S*X
   //where S is diagonal with positive elements
+  //POSSIBLY DELETE LATER
 
   for (int i =0; i < X.n_rows; i++){
     //X.row(i) = X.row(i)*dmat(i);
@@ -1031,6 +1033,7 @@ arma::mat diagtimesX(arma::mat X, arma::vec dmat){
   //Calculate S*X
   //where S is diagonal with positive elements
   //X is a matrix
+  //POSSIBLY DELETE LATER
 
   for (int i =0; i < X.n_rows; i++){
     //X.row(i) = X.row(i)*dmat(i);
@@ -1039,11 +1042,11 @@ arma::mat diagtimesX(arma::mat X, arma::vec dmat){
   return X;
 }
 
-// [[Rcpp::export]]
 arma::vec seq_int(long int a, long int b){
   /*
    *From https://github.com/coatless/r-to-armadillo/blob/master/src/seq.cpp
    *create a sequence of numbers from a to b
+   *POSSIBLY DELETE LATER
    */
 
   long int d = std::abs(b-a)+1;
@@ -1052,23 +1055,23 @@ arma::vec seq_int(long int a, long int b){
 }
 
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::export]]
 arma::mat quadform2(arma::mat X, arma::vec dmat) {
   //Calculation of a quadratic form X'*D*X where D is diagonal
+  //POSSIBLY DELETE LATER
 
   X.each_col() %= sqrt(dmat);
   return X.t()*X;
 }
 
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::export]]
 int rbinom2(arma::vec prob) {
+  //POSSIBLY DELETE LATER
   return rbinom(1,1, prob(0))(0);
 }
 
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::export]]
 int rbinom3(double prob) {
+  //POSSIBLY DELETE LATER
 
   double u = randu();
 
@@ -1079,29 +1082,23 @@ int rbinom3(double prob) {
   }
 }
 
-
-
-
-
-
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::export]]
 arma::mat matrix_multiplication3(arma::mat x, arma::mat y){
+  //POSSIBLY DELETE LATER
   return x*y;
 }
 
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::export]]
 arma::mat matrix_multiplication4(arma::mat x){
+  //POSSIBLY DELETE LATER
   return x.t()*x;
 }
 
-
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::export]]
 arma::mat transpose_sq(arma::mat x){
   /* Taken from the Rfast package
    * transpose a square matrix
+   * POSSIBLY DELETE LATER
    */
 
   const int p=x.n_cols,n=x.n_rows;
@@ -1115,9 +1112,9 @@ arma::mat transpose_sq(arma::mat x){
 }
 
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::export]]
 arma::mat Transpose2(arma::mat x){
   //.t() is faster than transpose_sq and transpose_notsq
+  //POSSIBLY DELETE LATER
   return x.t();
 }
 
@@ -1126,6 +1123,7 @@ arma::mat diagtimesX2(arma::mat X, arma::vec dmat){
   //Calculate S*X
   //where S is diagonal with positive elements
   //X is a matrix (but here its a column vector)
+  //POSSIBLY DELETE LATER
 
   return X % dmat;
 }

@@ -84,36 +84,36 @@ dRUMocc <- function(formula, design_mats,
               sigma_inv_alpha_p, sigma_inv_beta_p)
 }
 
-#This is the function used for all non-spatial SSO analysis
-PGocc4 <- function(formula, design_mats, ndraws=1,
-                   alpha_m, beta_m,
-                   sigma_inv_alpha_p, sigma_inv_beta_p,
-                   percent_burn_in){
-  #The R function that uses the Polya-Gamma algorithm to fit a Bayesian
-  #single season model
-  #This function does allow the user to specify informative priors for
-  #alpha and beta
-  #samples are outputted as a list
-
-  req_design_mats <- vb_ReqDesigns(formula, design_mats)
-
-  W_vb <- req_design_mats$W
-  Y <- matrix(design_mats$Y$V1)
-  X <- req_design_mats$X
-  nvisits <- design_mats$nvisits #nvisits
-
-  y <- design_mats$y
-  siteids <- design_mats$siteids
-
-  ysum <- apply(y,1,sum, na.rm=TRUE) #a vector!
-  z <- design_mats$pres_abs #the inital z vector
-
-  logitoccPG3(X, Y, W_vb, as.matrix(siteids, ncol=1), ndraws, ysum, z,
-              nvisits,
-              alpha_m, beta_m,
-              sigma_inv_alpha_p, sigma_inv_beta_p,
-              percent_burn_in)
-}
+# PGocc4 <- function(formula, design_mats, ndraws=1,
+#                    alpha_m, beta_m,
+#                    sigma_inv_alpha_p, sigma_inv_beta_p,
+#                    percent_burn_in){
+#   #The R function that uses the Polya-Gamma algorithm to fit a Bayesian
+#   #single season model
+#   #This function does allow the user to specify informative priors for
+#   #alpha and beta
+#   #samples are outputted as a list
+#   #Old function and will be deprecated in future
+#
+#   req_design_mats <- vb_ReqDesigns(formula, design_mats)
+#
+#   W_vb <- req_design_mats$W
+#   Y <- matrix(design_mats$Y$V1)
+#   X <- req_design_mats$X
+#   nvisits <- design_mats$nvisits #nvisits
+#
+#   y <- design_mats$y
+#   siteids <- design_mats$siteids
+#
+#   ysum <- apply(y,1,sum, na.rm=TRUE) #a vector!
+#   z <- design_mats$pres_abs #the inital z vector
+#
+#   logitoccPG3(X, Y, W_vb, as.matrix(siteids, ncol=1), ndraws, ysum, z,
+#               nvisits,
+#               alpha_m, beta_m,
+#               sigma_inv_alpha_p, sigma_inv_beta_p,
+#               percent_burn_in)
+# }
 
 #This is the function used for all non-spatial SSO analysis
 PGocc <- function(formula, data_inputs,
@@ -162,8 +162,6 @@ PGocc <- function(formula, data_inputs,
                   sigma_inv_alpha_p, sigma_inv_beta_p,
                   percent_burn_in)
   }
-
-
 }
 
 PGoccnew <- function(detection.model,
