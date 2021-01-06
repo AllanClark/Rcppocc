@@ -629,7 +629,6 @@ arma::vec rpg5(arma::mat scale) {
  return output;
  }*/
 
-
 // [[Rcpp::depends("RcppArmadillo")]]
 // [[Rcpp::export]]
 List logitoccPG3(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector siteids,
@@ -1138,7 +1137,6 @@ List logitoccSPAT(arma::mat X, arma::mat W_vb, arma::mat Y, arma::mat z, arma::v
                   arma::mat alpha_m, arma::mat beta_m,
                   arma::mat sigma_inv_alpha_p, arma::mat sigma_inv_beta_p,
                   int ndraws, double percent_burn_in){
-
   /*
    * Called by the R function, occSPATlogit
    *
