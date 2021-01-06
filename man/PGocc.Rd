@@ -37,7 +37,7 @@ e.g. Suppose \code{W} contained three dataframes \code{W1}, \code{W2} and \code{
 The function undertakes MCMC sampling of the parameters of a single-season Bayesian occupancy model that uses Polya-Gamma random variables.
 }
 \value{
-\item{ }{  - The MCMC samples are returned as a named list with entries 'alpha', 'beta', 'z' and 'psi'. 'alpha', 'beta' are matrices with the number of rows equal to the number of regression effects.}
+\item{ }{  - The MCMC samples are returned as a named list with entries 'alpha', 'beta', 'z' and 'psi'. 'alpha', 'beta' are matrices where the number of rows equals to the number of regression effects and the number of columns equals to number of retained MCMC samples. The dimension of 'z' and 'psi' are 'number of surveyed sites' by 'number of retained MCMC samples'.}
 }
 \references{
 %% ~put references to the literature/web site here ~
