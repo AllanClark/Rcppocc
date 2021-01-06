@@ -1,10 +1,10 @@
 \name{occSPATlogitBinom}
 \alias{occSPATlogitBinom}
 
-\title{occSPATlogitBinom - single-season Bayesian spatial occupancy (Binomial) model using Polya-Gamma random variables.}
+\title{occSPATlogitBinom - single-season Bayesian spatial occupancy (Binomial) model using a Gaussian approximation to a Polya Gamma distribuition.}
 
 \description{
-The function undertakes MCMC sampling of the parameters of a single-season Bayesian spatial occupancy (Binomial) model that uses Polya-Gamma random variables. Here the detection process is modelled as a Binomial random variable.
+The function undertakes MCMC sampling of the parameters of a single-season Bayesian spatial occupancy (Binomial) model that uses a Gaussian approximation to a Polya Gamma distribuition. Here the detection process is modelled as a Binomial random variable.
 }
 
 \usage{
@@ -56,8 +56,7 @@ No thinning is undertaken.}
 
 \item{k}{BLAH BLAH BLAH}
 }
-\details{
-The function undertakes MCMC sampling of the parameters of a single-season Bayesian spatial occupancy (Binomial) model that uses Polya-Gamma random variables. Here the detection process is modelled as a Binomial random variable. Specifically we assume that \eqn{y[i]|z[i] ~ Binom(K[i], z[i]p[i])} where \eqn{K[i]} and \eqn{p[i]} are ther number of surveys to site \eqn{i} and \eqn{p[i]} is the conditional detection probability for site \eqn{i}.
+\details{The function undertakes MCMC sampling of the parameters of a single-season Bayesian spatial occupancy (Binomial) model that uses a Gaussian approximation to a Polya Gamma distribuition. Here the detection process is modelled as a Binomial random variable. Specifically we assume that \eqn{y[i] | z[i] ~ Binom(K[i], z[i]p[i])} where \eqn{K[i]} and \eqn{p[i]} are ther number of surveys to site \eqn{i} and \eqn{p[i]} is the conditional detection probability for site \eqn{i}.
 }
 \value{
 \item{ }{  - The MCMC samples are returned as a named list with entries 'alpha' and 'beta'. Both are matrices witht the number of rows equal to the number of regression effects.}
