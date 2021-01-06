@@ -17,10 +17,6 @@ logitoccSPAT <- function(X, W_vb, Y, z, ysum, nvisits, K, Minv, n_obs, siteids, 
     .Call(`_Rcppocc_logitoccSPAT`, X, W_vb, Y, z, ysum, nvisits, K, Minv, n_obs, siteids, unsurveyed_ind, tau_0, a_tau, b_tau, alpha_m, beta_m, sigma_inv_alpha_p, sigma_inv_beta_p, ndraws, percent_burn_in)
 }
 
-logitoccSPAT3 <- function(X, W_vb, Y, z, ysum, nvisits, K, Minv, n_obs, siteids, unsurveyed_ind, tau_0, a_tau, b_tau, alpha_m, beta_m, sigma_inv_alpha_p, sigma_inv_beta_p, ndraws, percent_burn_in) {
-    .Call(`_Rcppocc_logitoccSPAT3`, X, W_vb, Y, z, ysum, nvisits, K, Minv, n_obs, siteids, unsurveyed_ind, tau_0, a_tau, b_tau, alpha_m, beta_m, sigma_inv_alpha_p, sigma_inv_beta_p, ndraws, percent_burn_in)
-}
-
 logitoccSPATsplit <- function(X, W_vb, Y, z, ysum, nvisits, K, Minv, n_obs, siteids, unsurveyed_ind, tau_0, a_tau, b_tau, alpha_m, beta_m, sigma_inv_alpha_p, sigma_inv_beta_p, ndraws, percent_burn_in) {
     .Call(`_Rcppocc_logitoccSPATsplit`, X, W_vb, Y, z, ysum, nvisits, K, Minv, n_obs, siteids, unsurveyed_ind, tau_0, a_tau, b_tau, alpha_m, beta_m, sigma_inv_alpha_p, sigma_inv_beta_p, ndraws, percent_burn_in)
 }

@@ -5,7 +5,7 @@
 
 \title{Rcppocc}
 
-\description{Fits various Bayesian occupancy models (nonspatial and spatial) assuming all regression effects uses a logit link function.}
+\description{Fits various Bayesian occupancy models (non-spatial and spatial) assuming all regression effects uses a logit link function.}
 
 \details{The following package allows the user to build various Bayesian
   occupancy models. At present the standard occupancy model as well a restricted
@@ -18,6 +18,7 @@
 \references{
 \itemize{
 \item{Broms, K.M., Johnson, D.S., Altwegg, R. and Conquest, L.L., (2014). Spatial occupancy models applied to atlas data show Southern Ground Hornbills strongly depend on protected areas. Ecological Applications, 24(2), pp.363-374.}
+\item{Clark, A.E. and Altwegg, R., (2019). Efficient Bayesian analysis of occupancy models with logit link functions. Ecology and evolution, 9(2), pp.756-768.}
 \item Dorazio, R. M. and Rodriguez, D. T. (2012), A Gibbs sampler for Bayesian analysis of site-occupancy data. Methods in Ecology and Evolution, 3: 1093-1098. \url{doi: 10.1111/j.2041-210X.2012.00237.x}
 \item Johnson, D. S., Conn, P. B., Hooten, M., Ray, J., and Pond, B. (2013). Spatial occupancy
 models for large data sets. Ecology, \url{http://dx.doi.org/10.1890/12-0564.1.}
