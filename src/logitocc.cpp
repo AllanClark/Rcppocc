@@ -23,7 +23,7 @@ using namespace RcppParallel;
 
 // [[Rcpp::depends("RcppArmadillo")]]
 arma::mat mvrnormArma(int n, arma::vec mu, arma::mat sigma) {
-  /* Sampling from a Gaussian (mutivariate) distribution
+  /* Sampling from a Gaussian (multivariate) distribution
    * output is row vector
    */
   int ncols = sigma.n_cols;
@@ -33,7 +33,7 @@ arma::mat mvrnormArma(int n, arma::vec mu, arma::mat sigma) {
 
 // [[Rcpp::depends("RcppArmadillo")]]
 arma::mat mvrnormArma2(int n, arma::vec mu, arma::mat sigma) {
-  /* Sampling from a Gaussian (mutivariate) distribution
+  /* Sampling from a Gaussian (multivariate) distribution
    * output is column vector
    */
   int ncols = sigma.n_cols;
@@ -45,7 +45,7 @@ arma::mat mvrnormArma2(int n, arma::vec mu, arma::mat sigma) {
 
 // [[Rcpp::depends("RcppArmadillo")]]
 arma::mat mvrnormArma3(int n, arma::vec A, arma::mat invSigma) {
-  /* Sampling from a Gaussian (mutivariate) distribution
+  /* Sampling from a Gaussian (multivariate) distribution
    * output is column vector
    */
   int ncols = invSigma.n_cols;
@@ -75,7 +75,7 @@ arma::mat mvrnormArma3(int n, arma::vec A, arma::mat invSigma) {
 // [[Rcpp::depends("RcppArmadillo")]]
 // [[Rcpp::export]]
 arma::mat mvrnormArma4(int n, arma::vec A, arma::mat invSigma) {
-  /* Sampling from a Gaussian (mutivariate) distribution
+  /* Sampling from a Gaussian (multivariate) distribution
    * output is column vector
    */
   int ncols = invSigma.n_cols;
@@ -104,7 +104,7 @@ arma::mat mvrnormArma4(int n, arma::vec A, arma::mat invSigma) {
 // [[Rcpp::depends("RcppArmadillo")]]
 // [[Rcpp::export]]
 arma::mat mvrnormArma5(int n, arma::mat invSigma) {
-  /* Sampling from a Gaussian (mutivariate) distribution
+  /* Sampling from a Gaussian (multivariate) distribution
    * A is a precision matrix
    * output is column vector
    */
@@ -137,7 +137,7 @@ arma::mat mvrnormArma5(int n, arma::mat invSigma) {
 // [[Rcpp::depends("RcppArmadillo")]]
 // [[Rcpp::export]]
 arma::mat mvrnormArma6(int n, arma::vec A, arma::mat invSigma) {
-  /* Sampling from a Gaussian (mutivariate) distribution
+  /* Sampling from a Gaussian (multivariate) distribution
    * output is column vector
    */
   //int ncols = invSigma.n_cols;
@@ -148,7 +148,7 @@ arma::mat mvrnormArma6(int n, arma::vec A, arma::mat invSigma) {
 // [[Rcpp::depends("RcppArmadillo")]]
 // [[Rcpp::export]]
 void mvrnormArma4_timers(int n, arma::vec A, arma::mat invSigma) {
-  /* Sampling from a Gaussian (mutivariate) distribution
+  /* Sampling from a Gaussian (multivariate) distribution
    * output is column vector
    */
   int ncols = invSigma.n_cols;
