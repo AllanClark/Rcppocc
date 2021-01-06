@@ -646,7 +646,7 @@ List logitoccPG3(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector siteids
    * y = observed data
    * W_vb = the design matrix associated with detection process
    * ndraws = number of MCMC iterations
-   * Called by the R function, PGocc4
+   * Called by the R function, PGocc
    *-----------------------------------------------------------------------*/
 
   arma::mat X_t = X.t(); //the transpose of the design matrix
@@ -820,7 +820,9 @@ List logitoccPG3_z(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector sitei
    * y = observed data
    * W_vb = the design matrix associated with detection process
    * ndraws = number of MCMC iterations
-   * Called by the R function, PGocc4
+   * Called by the R function, PGocc
+   * The posterior draw for the occupancy status (z)
+   * as well as psi = 1/(1+exp(-X*beta)) are stored.
    *-----------------------------------------------------------------------*/
 
   arma::mat X_t = X.t(); //the transpose of the design matrix
@@ -956,7 +958,7 @@ List logitoccPG3_z(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector sitei
 
     //update the psi matrix for those sites the species has not been seen
     //psi.elem(not_observed_index) = 1/(1+exp(-X.rows(not_observed_index)*beta)); //plogis(X[not.observed.index,]%*%beta)
-    //changed here since we calculate the residuals as defoned by Wright et al 2019
+    //changed here since we calculate the residuals as defined by Wright et al 2019
     psi = 1/(1+exp(-X*beta));
 
     /*sample z

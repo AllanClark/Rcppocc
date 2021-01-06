@@ -13,42 +13,6 @@ logitoccPG3_z <- function(X, Y, W_vb, siteids, ndraws, ysum, z, nvisits, alpha_m
     .Call(`_Rcppocc_logitoccPG3_z`, X, Y, W_vb, siteids, ndraws, ysum, z, nvisits, alpha_m, beta_m, sigma_inv_alpha_p, sigma_inv_beta_p, percent_burn_in)
 }
 
-quadform <- function(X, Xt, dmat) {
-    .Call(`_Rcppocc_quadform`, X, Xt, dmat)
-}
-
-seq_int <- function(a, b) {
-    .Call(`_Rcppocc_seq_int`, a, b)
-}
-
-quadform2 <- function(X, dmat) {
-    .Call(`_Rcppocc_quadform2`, X, dmat)
-}
-
-rbinom2 <- function(prob) {
-    .Call(`_Rcppocc_rbinom2`, prob)
-}
-
-rbinom3 <- function(prob) {
-    .Call(`_Rcppocc_rbinom3`, prob)
-}
-
-matrix_multiplication3 <- function(x, y) {
-    .Call(`_Rcppocc_matrix_multiplication3`, x, y)
-}
-
-matrix_multiplication4 <- function(x) {
-    .Call(`_Rcppocc_matrix_multiplication4`, x)
-}
-
-transpose_sq <- function(x) {
-    .Call(`_Rcppocc_transpose_sq`, x)
-}
-
-Transpose2 <- function(x) {
-    .Call(`_Rcppocc_Transpose2`, x)
-}
-
 logitoccSPAT <- function(X, W_vb, Y, z, ysum, nvisits, K, Minv, n_obs, siteids, unsurveyed_ind, tau_0, a_tau, b_tau, alpha_m, beta_m, sigma_inv_alpha_p, sigma_inv_beta_p, ndraws, percent_burn_in) {
     .Call(`_Rcppocc_logitoccSPAT`, X, W_vb, Y, z, ysum, nvisits, K, Minv, n_obs, siteids, unsurveyed_ind, tau_0, a_tau, b_tau, alpha_m, beta_m, sigma_inv_alpha_p, sigma_inv_beta_p, ndraws, percent_burn_in)
 }
