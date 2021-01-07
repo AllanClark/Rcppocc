@@ -1,7 +1,7 @@
-\name{occSPATlogitConsBinomPG}
-\alias{occSPATlogitConsBinomPG}
+\name{occSPATlogitConsPG}
+\alias{occSPATlogitConsPG}
 
-\title{occSPATlogitConsBinomPG - Implementation of the consensus model with \code{k}
+\title{occSPATlogitConsPG - Implementation of the consensus model with \code{k}
 subsets using the Binomial Polya-Gamma model.}
 
 \description{
@@ -9,7 +9,7 @@ The function implements of the consensus model with k subsets using the Binomial
 }
 
 \usage{
-occSPATlogitConsBinomPG(detection.model, occupancy.model, spatial.model, so.data, prior, control, stat, k)
+occSPATlogitConsPG(detection.model, occupancy.model, spatial.model, so.data, prior, control, stat, k)
 }
 \arguments{
 \item{detection.model}{A formula object describing the detection portion of
@@ -59,7 +59,7 @@ No thinning is undertaken.}
 }
 \details{In order to attempt to improve the efficiency of \eqn{occSPATlogitBinom}, we use the Consensus Monte Carlo method of Huang and Gelman (2005). This entails extracting \eqn{k} subsets of a users data and then applying \eqn{occSPATlogitBinom} to each of the subsets after adjusting the prior distribution of the parameters of the model apprpriately. The final posterior distribution of the regression effects results in a Gaussian distribution where the mean and covariance matrices are an appropriately weighted average of the posterior distributions obtained from each of the subsets.
 
-Here the detection process is modelled as a Binomial random variable. Specifically we assume that \eqn{y_i | z[i] ~ Binom(K[i], z[i] p[i])} where \eqn{K[i]} and \eqn{p[i]} are ther number of surveys to site \eqn{i} and \eqn{p[i]} is the conditional detection probability for site \eqn{i}.
+Here the detection process is modelled as a Binomial random variable. Specifically we assume that \ifelse{html}{\out{y<sub>i</sub>|z<sub>i</sub>~Binom(K<sub>i</sub>,z<sub>i</sub>*p<sub>i</sub>)}}{} where \ifelse{html}{\out{y<sub>i</sub>}}{} and \ifelse{html}{\out{p<sub>i</sub>}}{} are ther number of surveys to site \eqn{i} and \ifelse{html}{\out{p<sub>i</sub>}}{} is the conditional detection probability for site \eqn{i}.
 }
 \value{
 \item{ }{  - MCMC samples similar to \eqn{occSPATlogitBinom} are outputted, one for each subset of the data. A list of length \eqn{k} is returned. Within each list item another list is returned with the following named items: \eqn{locc}, \eqn{alpha}, \eqn{beta}, \eqn{theta}, \eqn{tau} and \eqn{psi}. \eqn{locc} is the sample mean occupancy probability for a subset.}
@@ -149,7 +149,7 @@ nthin <- 1
 
 t1_logit <- proc.time()
 
-spat_logitConsBinomPG <- occSPATlogitConsBinomPG(detection.model= ~ nspp, occupancy.model= ~ PC1 + PC2,
+spat_logitConsPG <- occSPATlogitConsPG(detection.model= ~ nspp, occupancy.model= ~ PC1 + PC2,
                                     spatial.model = list(threshold = 0.36,
                                     moran.cut = numSpatre, rho=1),
                                     so.data = Make.so.data,
@@ -170,8 +170,8 @@ RcppTimer #in seconds
 #--------------------------------------------------------------------------
 
 #the results for the first subset
-names(spat_logitConsBinomPG[[1]])
-dim(spat_logitConsBinomPG$alpha) #note the dimensions! i.e. row matrices
+names(spat_logitConsPG[[1]])
+dim(spat_logitConsPG$alpha) #note the dimensions! i.e. row matrices
 #--------------------------------------------------------------------------
 }
 

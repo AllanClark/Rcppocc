@@ -56,7 +56,9 @@ No thinning is undertaken.}
 
 \item{k}{The number of independent subsets to split the sites in. Default is set to 1 (i.e. no split). For k>1, consensus models will be used.}
 }
-\details{The function undertakes MCMC sampling of the parameters of a single-season Bayesian spatial occupancy (Binomial) model that uses Polya-Gamma latent variables. Here the detection process is modelled as a Binomial random variable. Specifically we assume that \eqn{y_i | z[i] ~ Binom(K[i], z[i] p[i])} where \eqn{K[i]} and \eqn{p[i]} are ther number of surveys to site \eqn{i} and \eqn{p[i]} is the conditional detection probability for site \eqn{i}.
+\details{The function undertakes MCMC sampling of the parameters of a single-season Bayesian spatial occupancy (Binomial) model that uses Polya-Gamma latent variables.
+
+Here the detection process is modelled as a Binomial random variable. Specifically we assume that \ifelse{html}{\out{y<sub>i</sub>|z<sub>i</sub>~Binom(K<sub>i</sub>,z<sub>i</sub>*p<sub>i</sub>)}}{} where \ifelse{html}{\out{y<sub>i</sub>}}{} and \ifelse{html}{\out{p<sub>i</sub>}}{} are ther number of surveys to site \eqn{i} and \ifelse{html}{\out{p<sub>i</sub>}}{} is the conditional detection probability for site \eqn{i}.
 }
 \value{
 \item{ }{  - The MCMC samples are returned as a named list with entries 'alpha' and 'beta'.}
