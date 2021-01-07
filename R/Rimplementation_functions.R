@@ -701,7 +701,7 @@ occSPATlogitBinomPG <- function(detection.model, occupancy.model, spatial.model,
 
 #rewriting the code so that it has a similar form to the stocc package!
 #this function is used to fit spatial occupancy models
-occSPATlogitConsBinomPG<- function(detection.model, occupancy.model, spatial.model,
+occSPATlogitConsBinom<- function(detection.model, occupancy.model, spatial.model,
                             so.data,
                             prior,
                             control,
