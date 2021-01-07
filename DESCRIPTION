@@ -16,7 +16,11 @@ Imports:
   Rcpp (>= 0.12.18), 
   RcppParallel, 
   stocc,
-  dplyr
+  dplyr,
+  SDraw,
+  foreach,
+  doParallel,
+  sp
 LinkingTo: 
   Rcpp, 
   RcppArmadillo, 

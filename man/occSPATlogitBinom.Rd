@@ -1,7 +1,7 @@
 \name{occSPATlogitBinom}
 \alias{occSPATlogitBinom}
 
-\title{occSPATlogitBinom - single-season Bayesian spatial occupancy (Binomial) model using a Gaussian approximation to a Polya Gamma distribuition.}
+\title{occSPATlogitBinom - single-season Bayesian spatial occupancy model using a Gaussian approximation to a Polya Gamma distribuition. This model is termed the Binomial Polya-Gamma model.}
 
 \description{
 The function undertakes MCMC sampling of the parameters of a single-season Bayesian spatial occupancy (Binomial) model that uses a Gaussian approximation to a Polya Gamma distribuition. Here the detection process is modelled as a Binomial random variable.
@@ -59,7 +59,7 @@ No thinning is undertaken.}
 \details{The function undertakes MCMC sampling of the parameters of a single-season Bayesian spatial occupancy (Binomial) model that uses a Gaussian approximation to a Polya Gamma distribuition. Here the detection process is modelled as a Binomial random variable. Specifically we assume that \eqn{y_i | z[i] ~ Binom(K[i], z[i] p[i])} where \eqn{K[i]} and \eqn{p[i]} are ther number of surveys to site \eqn{i} and \eqn{p[i]} is the conditional detection probability for site \eqn{i}.
 }
 \value{
-\item{ }{  - The MCMC samples are returned as a named list with entries 'alpha', 'beta', 'theta', 'tau', 'real.occ' (the true occupancy status) and 'psi'. }
+\item{ }{  - The MCMC samples are returned as a named list with entries \eqn{alpha}, \eqn{beta}, \eqn{theta}, \eqn{tau}, \eqn{real.occ} (the true occupancy status) and \eqn{psi}. }
 }
 \references{
 %% ~put references to the literature/web site here ~

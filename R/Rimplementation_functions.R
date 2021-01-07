@@ -441,12 +441,6 @@ occSPATlogitBinom <- function(detection.model, occupancy.model, spatial.model,
   visit$site.idx <- factor(visit[, attr(visit, "site")],
                            levels = levels(site$site.idx))
 
-  #### trying something here
-  # weaver_grouped <- visit %>%
-  #   group_by(SiteName) %>%
-  #   dplyr::summarize(Y = sum(PAdata),
-  #             n = n(), nspp = mean(nspp))
-
   W_mean <- NULL
 
   n_var <- dim(prior$Q.d)[1]-1 # Find number of detection covariates
@@ -485,10 +479,6 @@ occSPATlogitBinom <- function(detection.model, occupancy.model, spatial.model,
 
   xy <- as.matrix(site[, attr(site, "coords")])
   X <- as.matrix(model.matrix(occupancy.model, site)) #occupancy design matrix
-  ####
-  # nspp <- tapply(so.data$visit$nspp, so.data$visit$SiteName, mean)
-  # nspp <- scale(nspp)
-  #W_vb <- cbind(1, as.matrix(nspp))
   W_vb <- as.matrix( model.matrix(detection.model, W_mean) ) #detection design matrix
   Y <- matrix( visit[, attr(visit, "obs")], ncol=1 )
 
@@ -587,12 +577,6 @@ occSPATlogitBinomPG <- function(detection.model, occupancy.model, spatial.model,
   visit$site.idx <- factor(visit[, attr(visit, "site")],
                            levels = levels(site$site.idx))
 
-  #### trying something here
-  # weaver_grouped <- visit %>%
-  #   group_by(SiteName) %>%
-  #   summarize(Y = sum(PAdata),
-  #             n = n(), nspp = mean(nspp))
-
   W_mean <- NULL
 
   n_var <- dim(prior$Q.d)[1]-1 # Find number of detection covariates
@@ -630,13 +614,9 @@ occSPATlogitBinomPG <- function(detection.model, occupancy.model, spatial.model,
   W_mean <- data.frame(W_mean)
   colnames(W_mean) <- names(so.data$visit)[4:(n_var+3)] # Set colnames
 
-
   xy <- as.matrix(site[, attr(site, "coords")])
   X <- as.matrix(model.matrix(occupancy.model, site)) #occupancy design matrix
-  ####
-  # nspp <- tapply(so.data$visit$nspp, so.data$visit$SiteName, mean)
-  # nspp <- scale(nspp)
-  #W_vb <- cbind(1, as.matrix(nspp))
+
   W_vb <- as.matrix( model.matrix(detection.model, W_mean) ) #detection design matrix
   Y <- matrix( visit[, attr(visit, "obs")], ncol=1 )
 
@@ -721,105 +701,111 @@ occSPATlogitBinomPG <- function(detection.model, occupancy.model, spatial.model,
 
 #rewriting the code so that it has a similar form to the stocc package!
 #this function is used to fit spatial occupancy models
-occSPATlogitCons<- function(detection.model, occupancy.model, spatial.model,
+occSPATlogitConsBinomPG<- function(detection.model, occupancy.model, spatial.model,
                             so.data,
                             prior,
                             control,
                             stat=1,
                             k=3){
-  #Date = 30 Aug 2018
+  #Date = 7 Jan 2021 (updated AEC)
 
-  cat("\n ---------------------------------------------------------------------------------------")
-  cat("\n You are fitting a Bayesian spatial occupancy model using Restricted Spatial Regression.")
-  cat("\n Be patient while the sampling continues.")
-  cat("\n ---------------------------------------------------------------------------------------\n")
+  if (k> parallel::detectCores()){
+    cat("\n ---------------------------------------------------------------------------------------")
+    cat(paste("\n The value of k is too large. Reduce it to be at most k =", doParallel::detectCores()))
+    cat("\n ---------------------------------------------------------------------------------------\n")
+  }else{
 
+    cat("\n ---------------------------------------------------------------------------------------")
+    cat("\n You are fitting a Bayesian spatial occupancy model using Restricted Spatial Regression.")
+    cat("\n Be patient while the sampling continues.")
+    cat("\n ---------------------------------------------------------------------------------------\n")
 
+    #Design matrix formulation - taken from stocc package
+    site <- so.data$site
+    nsites <- NROW(site)
+    rownames(site) <- 1:nsites
+    visit <- so.data$visit
+    site$site.idx <- factor(site[, attr(site, "site")])
+    visit$site.idx <- factor(visit[, attr(visit, "site")],
+                             levels = levels(site$site.idx))
 
+    nvisits_all <- table(visit$SiteName)
+    ### we now split the data
+    surveyed <- unique(visit$SiteName)
+    sample_size <- floor(length(surveyed)/k)
+    #require(SDraw)
 
-  #Design matrix formulation - taken from stocc package
-  site <- so.data$site
-  rownames(site) <- 1:nrow(site)
-  visit <- so.data$visit
-  site$site.idx <- factor(site[, attr(site, "site")])
-  visit$site.idx <- factor(visit[, attr(visit, "site")],
-                           levels = levels(site$site.idx))
+    spat_df <- sp::SpatialPoints(coords = site[surveyed, 2:3])
+    samples <- list()
 
-  nvisits_all <- table(visit$SiteName)
-  ### we now split the data
-  surveyed <- unique(visit$SiteName)
-  sample_size <- floor(length(surveyed)/k)
-  require(SDraw)
+    GRTS <- SDraw::grts.point(spat_df, sample_size)
+    samples[[1]] <- as.numeric(as.character(GRTS$geometryID))
+    spat_df <- sp::SpatialPoints(coords = site[surveyed[-samples[[1]]], 2:3])
 
-  spat_df <- SpatialPoints(coords = site[surveyed, 2:3])
-  samples <- list()
-
-  GRTS <- grts.point(spat_df, sample_size)
-  samples[[1]] <- as.numeric(as.character(GRTS$geometryID))
-  spat_df <- SpatialPoints(coords = site[surveyed[-samples[[1]]], 2:3])
-
-  for (i in 2:k){
-    GRTS <- grts.point(spat_df, sample_size)
-    samples[[i]]<- as.numeric(as.character(GRTS$geometryID))
-    if (i != k) {
-      spat_df <- SpatialPoints(coords = site[surveyed[-unlist(samples)], 2:3])
+    for (i in 2:k){
+      GRTS <- SDraw::grts.point(spat_df, sample_size)
+      samples[[i]]<- as.numeric(as.character(GRTS$geometryID))
+      if (i != k) {
+        spat_df <- sp::SpatialPoints(coords = site[surveyed[-unlist(samples)], 2:3])
+      }
     }
-  }
+
+    # Adjust priors for consensus
+    prior$Q.d <- prior$Q.d/k
+    prior$Q.o <- prior$Q.o/k
+    prior$a.tau <- (prior$a.tau-1+k)/k
+    prior$b.tau <- prior$b.tau/k
+
+    cl <- parallel::makeCluster(k)
+    doParallel::registerDoParallel(cl)
+
+    real_locc <- foreach::foreach(i=1:k#)%dopar%{
+      #,.packages=c("Rcppocc","stocc", "dplyr"))%dopar%{
+      ,.packages=c("stocc"))%dopar%{
+      # what changes: reordered site and diff visit according to subset
+      ind <- visit$SiteName %in% samples[[i]]
+      sample_visit <- visit[ind,]
+      samples[[i]] <- samples[[i]][order(samples[[i]])]
+
+      sample_site <- rbind(site[samples[[i]],],
+                        site[-samples[[i]],])
+      Names <- list(visit=list(site="SiteName",obs="PAdata"),
+                 site = list(site="SiteName", coords=c("Longitude","Latitude")))
+      site_index <- 1:nsites
+      nvis <- nvisits_all[samples[[i]]]
+      visit_sample_index <- rep(1:sample_size,nvis)
+      sample_visit$SiteName <- visit_sample_index
+      sample_site$SiteName <- 1:nsites
+      sample_Make.so.data <- make.so.data(visit.data=sample_visit[,-ncol(sample_visit)],
+                                       site.data=sample_site[,-ncol(sample_site)],
+                                       names=Names)
 
 
+      spat_logit_sample <- occSPATlogitBinom(detection.model = detection.model,
+                                          occupancy.model = occupancy.model,
+                                          spatial.model=spatial.model,
+                                          so.data = sample_Make.so.data, prior=prior,
+                                          control=control,stat, k=k)
 
-  # Adjust priors for consensus
-  prior$Q.d <- prior$Q.d/k
-  prior$Q.o <- prior$Q.o/k
-  prior$a.tau <- (prior$a.tau-1+k)/k
-  prior$b.tau <- prior$b.tau/k
+      x <- sample_site[,2]
+      y <- sample_site[,3]
+      xy_sample <- cbind(x,y)
+      locc_sample <- apply(spat_logit_sample$real.occ,1,mean)
+      locc_sample <- locc_sample[order(xy_sample[,1],xy_sample[,2],decreasing=F)]
 
+      out <- list(locc=locc_sample,
+               alpha=spat_logit_sample$alpha,
+               beta=spat_logit_sample$beta,
+               theta=spat_logit_sample$theta,
+               tau=spat_logit_sample$tau,
+               psi=spat_logit_sample$psi)
 
-  real_locc <- foreach(i=1:k,
-                       .packages=c("Rcppocc","stocc", "dplyr"))%dopar%{
-                         # what changes: reordered site and diff visit according to subset
-                         ind <- visit$SiteName %in% samples[[i]]
-                         sample_visit <- visit[ind,]
-                         samples[[i]] <- samples[[i]][order(samples[[i]])]
+      return (out)
+    }
+    parallel::stopCluster(cl)
 
-                         sample_site <- rbind(site[samples[[i]],],
-                                              site[-samples[[i]],])
-                         Names <- list(visit=list(site="SiteName",obs="PAdata"),
-                                       site = list(site="SiteName", coords=c("Longitude","Latitude")))
-                         site_index <- 1:1881
-                         nvis <- nvisits_all[samples[[i]]]
-                         visit_sample_index <- rep(1:sample_size,nvis)
-                         sample_visit$SiteName <- visit_sample_index
-                         sample_site$SiteName <- 1:1881
-                         sample_Make.so.data <- make.so.data(visit.data=sample_visit[,-ncol(sample_visit)],
-                                                             site.data=sample_site[,-ncol(sample_site)],
-                                                             names=Names)
-
-
-                         spat_logit_sample <- occSPATlogitBinom(detection.model = detection.model,
-                                                                occupancy.model = occupancy.model,
-                                                                spatial.model=spatial.model,
-                                                                so.data = sample_Make.so.data, prior=prior,
-                                                                control=control,stat, k=k)
-
-                         x <- sample_site[,2]
-                         y <- sample_site[,3]
-                         xy_sample <- cbind(x,y)
-                         locc_sample <- apply(spat_logit_sample$real.occ,1,mean)
-                         locc_sample <- locc_sample[order(xy_sample[,1],xy_sample[,2],decreasing=F)]
-                         #real_locc[,i]<- locc_sample
-
-                         out <- list(locc=locc_sample, alpha=spat_logit_sample$alpha,
-                                     beta=spat_logit_sample$beta,
-                                     theta=spat_logit_sample$theta,
-                                     tau=spat_logit_sample$tau,
-                                     psi=spat_logit_sample$psi)
-
-                         return (out)
-                       }
-
-  return(real_locc)
-
+    return(real_locc)
+  }#endif
 }
 
 
@@ -855,15 +841,15 @@ occSPATlogitConsPG <- function(detection.model, occupancy.model, spatial.model,
   sample_size <- floor(length(surveyed)/k)
   require(SDraw)
 
-  spat_df <- SpatialPoints(coords = site[surveyed, 2:3])
+  spat_df <- sp::SpatialPoints(coords = site[surveyed, 2:3])
   samples <- list()
 
-  GRTS <- grts.point(spat_df, sample_size)
+  GRTS <- SDraw::grts.point(spat_df, sample_size)
   samples[[1]] <- as.numeric(as.character(GRTS$geometryID))
-  spat_df <- SpatialPoints(coords = site[surveyed[-samples[[1]]], 2:3])
+  spat_df <- sp::SpatialPoints(coords = site[surveyed[-samples[[1]]], 2:3])
 
   for (i in 2:k){
-    GRTS <- grts.point(spat_df, sample_size)
+    GRTS <- SDraw::grts.point(spat_df, sample_size)
     samples[[i]]<- as.numeric(as.character(GRTS$geometryID))
     if (i != k) {
       spat_df <- SpatialPoints(coords = site[surveyed[-unlist(samples)], 2:3])

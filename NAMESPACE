@@ -7,3 +7,7 @@ importFrom(RcppParallel, RcppParallelLibs)
 
 #for the piping operator
 importFrom(dplyr,"%>%")
+
+#for the the foreach runs
+importFrom(foreach,"%dopar%")
+
