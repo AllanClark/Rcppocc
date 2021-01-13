@@ -7,8 +7,8 @@ Date: 2018-08-29
 Authors@R: person("Allan", "Clark", email="allan.clark@uct.ac.za",
   role = c("aut", "cre"))
 Description: The following package allows the user to build various Bayesian 
-  occupancy models. At present the standard occupancy model as well a restricted 
-  spatial models can be undertaken. We specifically assume that the regression 
+  occupancy models. At present the standard occupancy model as well restricted 
+  spatial occupancy models can be undertaken. We specifically assume that the regression 
   effects all use logit link functions. Gibbs sampling algorithms are developed 
   to undertake all MCMC sampling.
 License: GPL

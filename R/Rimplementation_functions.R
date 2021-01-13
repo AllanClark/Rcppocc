@@ -84,6 +84,7 @@ dRUMocc <- function(formula, design_mats,
               sigma_inv_alpha_p, sigma_inv_beta_p)
 }
 
+# TO BE REMOVED AT A LATER STAGE
 # PGocc4 <- function(formula, design_mats, ndraws=1,
 #                    alpha_m, beta_m,
 #                    sigma_inv_alpha_p, sigma_inv_beta_p,
@@ -137,6 +138,11 @@ PGocc <- function(formula, data_inputs,
   #number of sites, J is the maximum number of sampling periods per site.
   #store_z is a logical and indicates whether or not the occupancy probabilities are stored.
 
+  cat("\n ---------------------------------------------------------------------------------------")
+  cat("\n You are fitting a Bayesian nonspatial occupancy model.")
+  cat("\n Be patient while the sampling continues.")
+  cat("\n ---------------------------------------------------------------------------------------\n")
+
   design_mats <- vb_Designs(W=data_inputs$W, X=data_inputs$X, y=data_inputs$y)
   req_design_mats <- vb_ReqDesigns(formula, design_mats)
   W_vb <- req_design_mats$W
@@ -148,7 +154,7 @@ PGocc <- function(formula, data_inputs,
   siteids <- design_mats$siteids
 
   ysum <- apply(y,1,sum, na.rm=TRUE) #a vector!
-  z <- design_mats$pres_abs #the inital z vector
+  z <- design_mats$pres_abs #the initial z vector
 
   if (store_z==FALSE){
     logitoccPG3(X, Y, W_vb, as.matrix(siteids, ncol=1), ndraws, ysum, z,
@@ -165,112 +171,85 @@ PGocc <- function(formula, data_inputs,
   }
 }
 
-#To be completed: Fits a single season occupancy model using the input style
-#used by Johnson et al
-#' PGoccnew <- function(detection.model,
-#'                      occupancy.model,
-#'                      so.data,
-#'                      prior,
-#'                      control,
-#'                      choice=1){
-#'   #The R function that uses the Polya-Gamma algorithm to fit a Bayesian
-#'   #single season model
-#'   #This function does allow the user to specify informative priors for
-#'   #alpha and beta
-#'   #samples are outputted as a list
-#'   #'data_inputs' is a list that contains W, X and y
-#'   #W = A named list of data.frames of covariates that vary within sites. i.e.
-#'   #The dataframes are of dimension n (number of sites surveyed) by J where each
-#'   #row is associated with a site and each column represents a site visit. 'NA'
-#'   #values should be entered at locations that were not surveyed.
-#'   #X = A named data.frame that varies at site level.
-#'   #y = An n by J matrix of the detection, non-detection data, where n is the
-#'   #number of sites, J is the maximum number of sampling periods per site.
-#'   #choice = 1 ==> store the z matrix
-#'
-#'   #design_mats <- vb_Designs(W=data_inputs$W, X=data_inputs$X, y=data_inputs$y)
-#'   #req_design_mats <- vb_ReqDesigns(formula, design_mats)
-#'   #W_vb <- req_design_mats$W
-#'   #Y <- matrix(design_mats$Y$V1)
-#'   #X <- req_design_mats$X
-#'   #nvisits <- design_mats$nvisits #nvisits
-#'   #y <- design_mats$y
-#'   #siteids <- design_mats$siteids
-#'
-#'   #ysum <- apply(y,1,sum, na.rm=TRUE) #a vector!
-#'   #z <- design_mats$pres_abs #the inital z vector
-#'
-#'   #-----
-#'   cat("\n ---------------------------------------------------------------------------------------")
-#'   cat("\n You are fitting a Bayesian non-occupancy model.")
-#'   cat("\n Be patient while the sampling continues.")
-#'   cat("\n ---------------------------------------------------------------------------------------\n")
-#'
-#'   #Design matrix formulation - taken from stocc package
-#'   site <- so.data$site
-#'   visit <- so.data$visit
-#'   site$site.idx <- factor(site[, attr(site, "site")])
-#'   visit$site.idx <- factor(visit[, attr(visit, "site")],
-#'                            levels = levels(site$site.idx))
-#'
-#'   xy <- as.matrix(site[, attr(site, "coords")])
-#'   X <- as.matrix(model.matrix(occupancy.model, site)) #occupancy design matrix
-#'   W_vb <- as.matrix( model.matrix(detection.model, visit) ) #detection design matrix
-#'   Y <- matrix( visit[, attr(visit, "obs")], ncol=1 )
-#'
-#'   #starting values for the occupancy status
-#'   #all unsurveyed sites are initially set to 0
-#'   z <- as.matrix(ifelse(table(visit$site.idx, visit[, attr(visit, "obs")])[, "1"] > 0, 1, 0), ncol=1)
-#'   nvisits <- as.numeric(table(visit$site.idx)) #the number of surveys to sites
-#'   n.obs <- length(nvisits[ which(nvisits >0) ]) #only keep the sites that were surveyed
-#'   n.site <- nrow(X) #the number of sites
-#'   nvisits <- nvisits[nvisits>0] #the number of surveys to surveyed sites
-#'   unsurveyed_index <- ((n.obs+1):n.site) #index for the unsurveyed locations
-#'
-#'   siteids <- matrix(rep(1:n.obs, nvisits), ncol=1)
-#'   #create index of siteids. ie 1,1,1,2,2,3,... 3 visits to site 1, 2 to site 2 etc
-#'   ysum <- tapply(so.data$visit$PAdata, so.data$visit$SiteName, sum)
-#'   #the number of detections at each surveyed site
-#'   #--------------------------------------------------------------------------------
-#'
-#'   #objects associated with the prior specification
-#'   #so checking should be done here if one wants this to be "user proof"
-#'   alpha_m <- matrix(prior$mu.d, ncol=1)
-#'   beta_m <-  matrix(prior$mu.o, ncol=1)
-#'   sigma_inv_alpha_p <- as.matrix(prior$Q.d)
-#'   sigma_inv_beta_p <- as.matrix(prior$Q.o)
-#'   #--------------------------------------------------------------------------------
-#'
-#'   #mcmc control objects
-#'   #so checking should be done here if one wants this to be "user proof"
-#'   ndraws <- control$ndraws
-#'   percent_burn_in <- control$percent_burn_in
-#'   #--------------------------------------------------------------------------------
-#'
-#'   cat("\n dim(X)=", dim(X))
-#'   cat("\n dim(Y)=", dim(Y))
-#'   cat("\n dim(W)=", dim(W_vb))
-#'   cat("\n dim(as.matrix(siteids, ncol=1))=", dim(as.matrix(siteids, ncol=1)))
-#'   cat("\n dim(ysum)=", length(ysum))
-#'   cat("\n dim(z)=", length(z))
-#'   cat("\n dim(nvisits)=", length(nvisits))
-#'
-#'   if (choice==0){
-#'     logitoccPG3(X, Y, W_vb, as.matrix(siteids, ncol=1), ndraws, ysum, z,
-#'                 nvisits,
-#'                 alpha_m, beta_m,
-#'                 sigma_inv_alpha_p, sigma_inv_beta_p,
-#'                 percent_burn_in)
-#'   }else{
-#'     #store the z matrix
-#'     logitoccPG3_z(X, Y, W_vb, as.matrix(siteids, ncol=1), ndraws, ysum, z,
-#'                   nvisits,
-#'                   alpha_m, beta_m,
-#'                   sigma_inv_alpha_p, sigma_inv_beta_p,
-#'                   percent_burn_in)
-#'   }
-#'
-#' }
+PGocc2 <- function(detection.model,
+                     occupancy.model,
+                     so.data,
+                     prior,
+                     control,
+                     store_z=FALSE){
+  #Date = 13 Jan 2021
+  #Updated - AE Clark
+
+  #The R function that uses the Polya-Gamma algorithm to fit a Bayesian
+  #single season model using the input style used by Johnson et al
+  #i.e. the same as occSPATlogit
+  #This function does allow the user to specify informative priors for
+  #alpha and beta (AND POSSIBLY Z)
+  #samples are outputted as a list
+
+  cat("\n ---------------------------------------------------------------------------------------")
+  cat("\n You are fitting a Bayesian nonspatial occupancy model.")
+  cat("\n Be patient while the sampling continues.")
+  cat("\n ---------------------------------------------------------------------------------------\n")
+
+  #Design matrix formulation - taken from stocc package
+  site <- so.data$site
+  visit <- so.data$visit
+  site$site.idx <- factor(site[, attr(site, "site")])
+  visit$site.idx <- factor(visit[, attr(visit, "site")],
+                           levels = levels(site$site.idx))
+
+  xy <- as.matrix(site[, attr(site, "coords")])
+  X <- as.matrix(model.matrix(occupancy.model, site)) #occupancy design matrix
+  W_vb <- as.matrix( model.matrix(detection.model, visit) ) #detection design matrix
+  Y <- matrix( visit[, attr(visit, "obs")], ncol=1 )
+
+  #starting values for the occupancy status
+  #all unsurveyed sites are initially set to 0
+  z <- as.matrix(ifelse(table(visit$site.idx, visit[, attr(visit, "obs")])[, "1"] > 0, 1, 0), ncol=1)
+  nvisits <- as.numeric(table(visit$site.idx)) #the number of surveys to sites
+  n.obs <- length(nvisits[ which(nvisits >0) ]) #only keep the sites that were surveyed
+  n.site <- nrow(X) #the number of sites
+  nvisits <- nvisits[nvisits>0] #the number of surveys to surveyed sites
+  unsurveyed_index <- ((n.obs+1):n.site) #index for the unsurveyed locations
+
+  siteids <- matrix(rep(1:n.obs, nvisits), ncol=1)
+  #create index of siteids. ie 1,1,1,2,2,3,... 3 visits to site 1, 2 to site 2 etc
+  ysum <- tapply(so.data$visit$PAdata, so.data$visit$SiteName, sum)
+  #the number of detections at each surveyed site
+  #--------------------------------------------------------------------------------
+
+  #objects associated with the prior specification
+  #so checking should be done here if one wants this to be "user proof"
+  alpha_m <- matrix(prior$mu.d, ncol=1)
+  beta_m <-  matrix(prior$mu.o, ncol=1)
+  sigma_inv_alpha_p <- as.matrix(prior$Q.d)
+  sigma_inv_beta_p <- as.matrix(prior$Q.o)
+  #--------------------------------------------------------------------------------
+
+  #mcmc control objects
+  #so checking should be done here if one wants this to be "user proof"
+  ndraws <- control$ndraws
+  percent_burn_in <- control$percent_burn_in
+  #--------------------------------------------------------------------------------
+
+  if (store_z==FALSE){
+    #don't store z matrix
+    logitoccPG3(X, Y, W_vb, as.matrix(siteids, ncol=1), ndraws, ysum, z,
+                nvisits,
+                alpha_m, beta_m,
+                sigma_inv_alpha_p, sigma_inv_beta_p,
+                percent_burn_in)
+  }else{
+    #store the z matrix
+    logitoccPG3_z(X, Y, W_vb, as.matrix(siteids, ncol=1), ndraws, ysum, z,
+                  nvisits,
+                  alpha_m, beta_m,
+                  sigma_inv_alpha_p, sigma_inv_beta_p,
+                  percent_burn_in)
+  }
+
+}
 
 #Code for running the Bayesian analysis using jagsUI
 #a simple single season occupancy model
