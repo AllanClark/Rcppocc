@@ -2,12 +2,12 @@ Package: Rcppocc
 Type: Package
 Title: Fits various Bayesian occupancy models assuming all regression effects 
   uses a logit link function
-Version: 1.0
-Date: 2018-08-29
+Version: 1.1
+Date: 2021-01-21
 Authors@R: person("Allan", "Clark", email="allan.clark@uct.ac.za",
   role = c("aut", "cre"))
 Description: The following package allows the user to build various Bayesian 
-  occupancy models. At present the standard occupancy model as well restricted 
+  occupancy models. At present the standard occupancy models and restricted 
   spatial occupancy models can be undertaken. We specifically assume that the regression 
   effects all use logit link functions. Gibbs sampling algorithms are developed 
   to undertake all MCMC sampling.

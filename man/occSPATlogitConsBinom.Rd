@@ -2,10 +2,10 @@
 \alias{occSPATlogitConsBinom}
 
 \title{occSPATlogitConsBinom - Implementation of the consensus model with \code{k}
-subsets using a Gaussian approximation to a Polya Gamma distribuition.}
+subsets using a Gaussian approximation to a Polya Gamma distribution.}
 
 \description{
-The function implements of the consensus model with k subsets using using a Gaussian approximation to a Polya Gamma distribuition.
+The function implements of the consensus model with k subsets using using a Gaussian approximation to a Polya Gamma distribution.
 }
 
 \usage{
@@ -57,12 +57,18 @@ No thinning is undertaken.}
 
 \item{k}{The number of independent subsets to split the sites in. Default is set to 3. Errors might occur if you set this value too large since as the number of subsets increase the number of data points in the subset data sets decreases!}
 }
-\details{In order to attempt to improve the efficiency of \code{occSPATlogitBinom}, we use the Consensus Monte Carlo method of Huang and Gelman (2005). This entails extracting \code{k} subsets of a users data and then applying \code{occSPATlogitBinom} to each of the subsets after adjusting the prior distribution of the parameters of the model apprpriately. The final posterior distribution of the regression effects results in a Gaussian distribution where the mean and covariance matrices are an appropriately weighted average of the posterior distributions obtained from each of the subsets.
+\details{In order to attempt to improve the efficiency of \code{occSPATlogitBinom}, we use the Consensus Monte Carlo method of Huang and Gelman (2005). This entails extracting \code{k} subsets of a users data and then applying \code{occSPATlogitBinom} to each of the subsets after adjusting the prior distribution of the parameters of the model appropriately. The final posterior distribution of the regression effects results in a Gaussian distribution where the mean and covariance matrices are an appropriately weighted average of the posterior distributions obtained from each of the subsets.
 
-Here the detection process is modelled as a Binomial random variable. Specifically we assume that \ifelse{html}{\out{y<sub>i</sub>|z<sub>i</sub>~Binom(K<sub>i</sub>,z<sub>i</sub>*p<sub>i</sub>)}}{} where \ifelse{html}{\out{y<sub>i</sub>}}{} and \ifelse{html}{\out{p<sub>i</sub>}}{} are ther number of surveys to site \code{i} and \ifelse{html}{\out{p<sub>i</sub>}}{} is the conditional detection probability for site \code{i}.
+Here the detection process is modelled as a Binomial random variable. Specifically we assume that \ifelse{html}{\out{y<sub>i</sub>|z<sub>i</sub>~Binom(K<sub>i</sub>,z<sub>i</sub>*p<sub>i</sub>)}}{} where \ifelse{html}{\out{y<sub>i</sub>}}{} and \ifelse{html}{\out{p<sub>i</sub>}}{} are the number of surveys to site \code{i} and \ifelse{html}{\out{p<sub>i</sub>}}{} is the conditional detection probability for site \code{i}.
 }
 \value{
 \item{ }{  - MCMC samples similar to \code{occSPATlogitBinom} are outputted, one for each subset of the data. A list of length \code{k} is returned. Within each list item another list is returned with the following named items: \code{locc}, \code{alpha}, \code{beta}, \code{theta}, \code{tau} and \code{psi}. \code{locc} is the sample mean occupancy probability for a subset.}
+\item{ }{  - \code{locc} = the mean occupancy probability at each site using a subset of the data (i.e. the mean of \code{real.occ} as defined in the other spatial occupancy functions);}
+\item{ }{  - \code{alpha} = the regression effects of the detection process;}
+\item{ }{  - \code{beta} = the regression effects of the occupancy process;}
+\item{ }{  - \code{theta} = the regression effects of the spatial component;}
+\item{ }{  - \code{tau} = the spatial precision parameter;}
+\item{ }{  - \code{psi} = conditional occupancy probabilities.}
 }
 \references{
 %% ~put references to the literature/web site here ~

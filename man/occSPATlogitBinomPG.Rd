@@ -58,10 +58,16 @@ No thinning is undertaken.}
 }
 \details{The function undertakes MCMC sampling of the parameters of a single-season Bayesian spatial occupancy (Binomial) model that uses Polya-Gamma latent variables.
 
-Here the detection process is modelled as a Binomial random variable. Specifically we assume that \ifelse{html}{\out{y<sub>i</sub>|z<sub>i</sub>~Binom(K<sub>i</sub>,z<sub>i</sub>*p<sub>i</sub>)}}{} where \ifelse{html}{\out{y<sub>i</sub>}}{} and \ifelse{html}{\out{p<sub>i</sub>}}{} are ther number of surveys to site \code{i} and \ifelse{html}{\out{p<sub>i</sub>}}{} is the conditional detection probability for site \code{i}.
+Here the detection process is modelled as a Binomial random variable. Specifically we assume that \ifelse{html}{\out{y<sub>i</sub>|z<sub>i</sub>~Binom(K<sub>i</sub>,z<sub>i</sub>*p<sub>i</sub>)}}{} where \ifelse{html}{\out{y<sub>i</sub>}}{} and \ifelse{html}{\out{p<sub>i</sub>}}{} are the number of surveys to site \code{i} and \ifelse{html}{\out{p<sub>i</sub>}}{} is the conditional detection probability for site \code{i}.
 }
 \value{
-\item{ }{  - The MCMC samples are returned as a named list with entries \code{alpha} and \code{beta}.}
+\item{ }{ - The MCMC samples are returned as a named list. The elements of the list are \code{alpha}, \code{beta}, \code{theta}, \code{tau_mat}, \code{real.occ} (the true occupancy status) and \code{psi}.}
+\item{ }{  - \code{alpha} = the regression effects of the detection process;}
+\item{ }{  - \code{beta} = the regression effects of the occupancy process;}
+\item{ }{  - \code{theta} = the regression effects of the spatial component;}
+\item{ }{  - \code{tau_mat} = the spatial precision parameter;}
+\item{ }{  - \code{real.occ} = the estimate of the true occupancy variable;}
+\item{ }{  - \code{psi} = conditional occupancy probabilities.}
 }
 \references{
 %% ~put references to the literature/web site here ~

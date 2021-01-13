@@ -49,7 +49,7 @@ At present, no checks are made to ensure that the correct inputs are supplied! B
 
 The
 elements of the list must include: (1) \code{ndraws} is the total number of iterations
-UNDERTAKEN for the MCMC sample, and (2) \code{percent_burn_in} is the percentage of 'ndraws' used as burn-in samples.
+UNDERTAKEN for the MCMC sample, and (2) \code{percent_burn_in} is the percentage of \code{ndraws} used as burn-in samples.
 
 The argument entered should be between 0.0 and 1.0. No check however is done to assess whether the user has entered the correct argument here. Note: The user has to thin the sample afterwards (if required).
 

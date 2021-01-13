@@ -8,10 +8,20 @@
 \description{Fits various Bayesian occupancy models (non-spatial and spatial) assuming all regression effects uses a logit link function.}
 
 \details{The following package allows the user to build various Bayesian
-  occupancy models. At present the standard occupancy model as well a restricted
-  spatial models can be undertaken. We specifically assume that the regression
+  occupancy models. We specifically assume that the regression
   effects all use logit link functions. Gibbs sampling algorithms are developed
   to undertake all MCMC sampling.
+
+  At present the following models can be fit:
+\itemize{
+  \item{A single season Bayesian occupancy (SSO) model using \link{PGocc}, \link{PGocc2} and \link{dRUMocc}. It is suggested that you use \link{PGocc2} if you are familiar with the \link{stocc} package.}
+  \item{A SSO Bayesian spatial model (specifically a restricted spatial regression model) using \link{occSPATlogit}.}
+  \item{standard occupancy model as well a restricted spatial models can be undertaken.}
+  \item{A SSO Bayesian spatial occupancy model using a Gaussian approximation to a Polya-Gamma distribuition. This model is termed the Binomial Gaussian model. See \link{occSPATlogitBinom}.}
+  \item{A SSO Bayesian spatial occupancy (Binomial) model using Polya-Gamma latent variables. See \link{occSPATlogitBinomPG}.}
+  \item{The implementation of a consensus model with \code{k} subsets using a Gaussian approximation to a Polya Gamma distribution. See \link{occSPATlogitConsBinom}.}
+  \item{The implementation of a consensus model with \code{k} subsets using the Binomial Polya-Gamma model. See \link{occSPATlogitConsPG}.}
+  }
 }
 \author{A.E. Clark (allan.clark@uct.ac.za)}
 

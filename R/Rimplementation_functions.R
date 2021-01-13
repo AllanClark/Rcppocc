@@ -823,7 +823,7 @@ occSPATlogitConsPG <- function(detection.model, occupancy.model, spatial.model,
     ### we now split the data
     surveyed <- unique(visit$SiteName)
     sample_size <- floor(length(surveyed)/k)
-    require(SDraw)
+    #require(SDraw)
 
     spat_df <- sp::SpatialPoints(coords = site[surveyed, 2:3])
     samples <- list()

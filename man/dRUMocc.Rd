@@ -21,7 +21,7 @@ dRUMocc(formula, design_mats, ndraws, alpha_m, beta_m, sigma_inv_alpha_p, sigma_
 }
 \details{The function undertakes MCMC sampling of the parameters of a single-season Bayesian occupancy model that uses the dRUM formulation. The function does not have much functionality since we advise the use of \code{PGocc} or \code{PGocc2} instead.}
 \value{
-\item{ }{ - The MCMC samples are returned as a named list with entries 'alpha' and 'beta'. Both are matrices.}
+\item{ }{ - The MCMC samples are returned as a named list with entries \code{alpha} and \code{beta}. Both are matrices.}
 }
 \references{
 %% ~put references to the literature/web site here ~

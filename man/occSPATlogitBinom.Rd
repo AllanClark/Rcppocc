@@ -1,10 +1,10 @@
 \name{occSPATlogitBinom}
 \alias{occSPATlogitBinom}
 
-\title{occSPATlogitBinom - single-season Bayesian spatial occupancy model using a Gaussian approximation to a Polya Gamma distribuition. This model is termed the Binomial Polya-Gamma model.}
+\title{occSPATlogitBinom - single-season Bayesian spatial occupancy model using a Gaussian approximation to a Polya Gamma distribuition. This model is termed the Binomial Gaussian model.}
 
 \description{
-The function undertakes MCMC sampling of the parameters of a single-season Bayesian spatial occupancy (Binomial) model that uses a Gaussian approximation to a Polya Gamma distribuition. Here the detection process is modelled as a Binomial random variable.
+The function undertakes MCMC sampling of the parameters of a single-season Bayesian spatial occupancy (Binomial) model that uses a Gaussian approximation to a Polya Gamma distribution. Here the detection process is modelled as a Binomial random variable.
 }
 
 \usage{
@@ -25,7 +25,7 @@ the occupancy process.
 Currently the only possible model is the restricted spatial regression model. Thus, \code{spatial.model=list(threshold=, moran.cut=)} is the only form that is accepted at present. The \code{threshold} component is used the create neighborhoods in the RSR model.  All sites within distance \code{threshold} of site i are considered neighbors of site.
 i.
 
-The \code{moran.cut} component is the number of eigenvalues of the Moran matrix to be used in the restricted spatial regression model. It is recommended to set this value equal to 0.1*(the number of sites in the analysis). (This argument is thus different to the 'stocc' usage).}
+The \code{moran.cut} component is the number of eigenvalues of the Moran matrix to be used in the restricted spatial regression model. It is recommended to set this value equal to 0.1*(the number of sites in the analysis). (This argument is thus different to the \code{stocc} usage).}
 
 \item{so.data}{An \code{so.data} object containing the observed occupancies, detection covariates, site covariates, and site coordinates. This is created via the \code{\link{make.so.data}}.}
 
@@ -56,12 +56,18 @@ No thinning is undertaken.}
 
 \item{k}{The number of independent subsets to split the sites in. Default is set to 1 (i.e. no split). For k>1, consensus models will be used.}
 }
-\details{The function undertakes MCMC sampling of the parameters of a single-season Bayesian spatial occupancy (Binomial) model that uses a Gaussian approximation to a Polya Gamma distribuition.
+\details{The function undertakes MCMC sampling of the parameters of a single-season Bayesian spatial occupancy (Binomial) model that uses a Gaussian approximation to a Polya Gamma distribution.
 
 Here the detection process is modelled as a Binomial random variable. Specifically we assume that \ifelse{html}{\out{y<sub>i</sub>|z<sub>i</sub>~Binom(K<sub>i</sub>,z<sub>i</sub>*p<sub>i</sub>)}}{} where \ifelse{html}{\out{y<sub>i</sub>}}{} and \ifelse{html}{\out{p<sub>i</sub>}}{} are the number of surveys to site \code{i} and \ifelse{html}{\out{p<sub>i</sub>}}{} is the conditional detection probability for site \code{i}.
 }
 \value{
-\item{ }{  - The MCMC samples are returned as a named list with entries \code{alpha}, \code{beta}, \code{theta}, \code{tau}, \code{real.occ} (the true occupancy status) and \code{psi}. }
+\item{ }{ - The MCMC samples are returned as a named list. The elements of the list are \code{alpha}, \code{beta}, \code{theta}, \code{tau_mat}, \code{real.occ} (the true occupancy status) and \code{psi}.}
+\item{ }{  - \code{alpha} = the regression effects of the detection process;}
+\item{ }{  - \code{beta} = the regression effects of the occupancy process;}
+\item{ }{  - \code{theta} = the regression effects of the spatial component;}
+\item{ }{  - \code{tau_mat} = the spatial precision parameter;}
+\item{ }{  - \code{real.occ} = the estimate of the true occupancy variable;}
+\item{ }{  - \code{psi} = conditional occupancy probabilities.}
 }
 \references{
 %% ~put references to the literature/web site here ~
