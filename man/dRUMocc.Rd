@@ -19,7 +19,7 @@ dRUMocc(formula, design_mats, ndraws, alpha_m, beta_m, sigma_inv_alpha_p, sigma_
   \item{sigma_inv_alpha_p }{ - The inverse of the covariance matrix of alpha.}
   \item{sigma_inv_beta_p }{ - The inverse of the covariance matrix of beta.}
 }
-\details{The function undertakes MCMC sampling of the parameters of a single-season Bayesian occupancy model that uses the dRUM formulation. The function does not have much functionality since we advise the use of PGocc4 instead.}
+\details{The function undertakes MCMC sampling of the parameters of a single-season Bayesian occupancy model that uses the dRUM formulation. The function does not have much functionality since we advise the use of \code{PGocc} or \code{PGocc2} instead.}
 \value{
 \item{ }{ - The MCMC samples are returned as a named list with entries 'alpha' and 'beta'. Both are matrices.}
 }

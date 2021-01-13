@@ -1,45 +1,64 @@
 \name{PGocc2}
 \alias{PGocc2}
 
-\title{PGocc2 - single-season Bayesian occupancy model using Polya-Gamma random variables. The arguments of this function are different to those of PGocc and uses a similar style to that used in the 'stocc' package. THIS PAGE HAS TO BE UPDATED!}
+\title{PGocc2 - single-season Bayesian occupancy model using Polya-Gamma random variables. The arguments of this function are different to those of PGocc and uses a similar style to that used in the \code{stocc} package. }
 
 \description{
 The function undertakes MCMC sampling of the parameters of a single-season Bayesian occupancy model that uses Polya-Gamma random variables.
 
-The arguments used are MOSTLY the same as those for the 'spatial.occupancy' function in the 'stocc' package although the 'initial.values' argument is not included at present.
+The arguments used are MOSTLY the same as those for the \code{spatial.occupancy} function in the \code{stocc} package although the \code{initial.values} argument is not included at present.
 }
 
 \usage{
 PGocc2(detection.model, occupancy.model, so.data, prior, control, store_z)
 }
 \arguments{
-  \item{formula }{ - Double right-hand side formula describing covariates of detection and occupancy in that order.}
-  \item{data_inputs }{ - A named list that contains the elements W, X, and y.
+  \item{detection.model}{A formula object describing the detection portion of
+  the occupancy model. The variables described by the detection model are
+  located in the \code{visit} data frame of the \code{so.data}.}
 
-  W - A named list of data.frames of covariates that vary within sites. i.e. The dataframes are of dimension \code{n} (number of sites surveyed) by \code{J} where each row is associated with a site and each column represents a site visit. 'NA' values should be entered at locations that were not surveyed.
+  \item{occupancy.model}{A formula object describing the fixed effects portion
+  of the spatial occupancy process. The variables described by the occupancy
+  model are located in the \code{site} data frame of an \code{so.data} object.}
 
-e.g. Suppose \code{W} contained three dataframes \code{W1}, \code{W2} and \code{W3}.
+  \item{so.data}{An \code{so.data} object containing the observed occupancies, detection covariates, site covariates, and site coordinates. This is created via the \code{\link{make.so.data}}.}
 
-\code{W$W1[1, ]} = the covariate values for site 1 for all of the visits. Note that some of the entries might be 'NA' meaning that no visit took place at those occasions.
+  \item{prior}{A named list that provides the parameter values for the prior distributions. At the current time the elements of the list MUST contain
+  \code{a.tau}, \code{b.tau}, \code{tau}, \code{Q.d}, \code{mu.d}, \code{Q.o} and \code{mu.o}.
 
- X - A named data.frame that varies at site level.
+  \code{a.tau} and \code{b.tau} are the parameters for the gamma prior on the spatial
+  process parameter in the occupancy model;
 
- y - An \code{n} by \code{J} matrix of the detection, non-detection data, where \code{n} is the number of sites, \code{J} is the maximum number of sampling periods per site.
+  \code{tau} is a starting value for the spatial precision parameter;
 
-}
-  \item{ndraws }{ - The number of MCMC samples undertaken. This is set as the number of burn-in iterations plus the number of post burn-in samples. See 'percent_burn_in' below.}
-  \item{alpha_m }{ - The prior mean alpha vector. Supply a matrix of the correct dimension.}
-  \item{beta_m }{ - The prior mean beta vector. Supply a matrix of the correct dimension.}
-  \item{sigma_inv_alpha_p }{ - The alpha precision matrix (i.e. the inverse of the covariance matrix).}
-  \item{sigma_inv_beta_p }{ - The beta precision matrix.}
-  \item{percent_burn_in }{ - The percentage of 'ndraws' used as burn-in samples. The argument entered should be between 0.0 and 1.0. No check however is done to assess whether the user has entered the correct argument here. }
-  \item{store_z }{ - A logical. 'store_z=TRUE' indicates that the 'z' and 'psi' samples are stored. Note that these are not stored by default. i.e. 'store_z=FALSE' is the default value for this argument.}
+  \code{Q.d} and \code{mu.d} are the prior precision matrix and mean vector for the detection regression effects while \code{Q.o} and \code{mu.o} are similar inputs for the occupancy process.
+
+  All of these arguments must be supplied by the user at present.
+
+  At present, no checks are made to ensure that the correct inputs are supplied! BE CAREFUL!}
+
+  \item{control}{A named list with the control parameters for the MCMC.
+
+  The elements of the list must include: (1) \code{ndraws} is the total number of iterations
+  UNDERTAKEN for the MCMC sample, and (2) \code{percent_burn_in} is the percentage of 'ndraws' used as burn-in samples.
+
+  The argument entered should be between 0.0 and 1.0. No check however is done to assess whether the user has entered the correct argument here. Note: The user has to thin the sample afterwards (if required).
+
+  No thinning is undertaken.}
+  \item{store_z }{ - A logical. \code{store_z=TRUE} indicates that the \code{z} and \code{psi} samples are stored. Note that these are not stored by default. i.e. \code{store_z=FALSE} is the default value for this argument.}
 }
 \details{
 The function undertakes MCMC sampling of the parameters of a single-season Bayesian occupancy model that uses Polya-Gamma random variables.
+
+The arguments used are MOSTLY the same as those for the \code{spatial.occupancy} function in the \code{stocc} package although the \code{initial.values} argument is not included at present.
 }
 \value{
-\item{ }{  - The MCMC samples are returned as a named list with entries 'alpha', 'beta', 'z' and 'psi'. 'alpha', 'beta' are matrices where the number of rows equals to the number of regression effects and the number of columns equals to number of retained MCMC samples. The dimension of 'z' and 'psi' are 'number of surveyed sites' by 'number of retained MCMC samples'.}
+\item{ }{  - The MCMC samples are returned as a named list with entries \code{alpha} and \code{beta} (\code{real.occ} and \code{psi} are optional).}
+\item{}{  - \code{alpha}, \code{beta} are matrices where the number of rows equals to the number of regression effects and the number of columns equals to number of retained MCMC samples. The dimension of \code{real.occ} and \code{psi} are \code{number of surveyed sites} by \code{number of retained MCMC samples}.}
+\item{ }{  - \code{alpha} = the regression effects of the detection process;}
+\item{ }{  - \code{beta} = the regression effects of the occupancy process;}
+\item{ }{  - \code{real.occ} = the estimate of the true occupancy variable;}
+\item{ }{  - \code{psi} = conditional occupancy probabilities.}
 }
 \references{
 %% ~put references to the literature/web site here ~

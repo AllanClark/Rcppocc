@@ -994,7 +994,7 @@ List logitoccPG3_z(arma::mat X, arma::mat Y, arma::mat W_vb, NumericVector sitei
 
   return List::create(_["alpha"]=post_alpha,
                       _["beta"]=post_beta,
-                      _["z"]=post_z,
+                      _["real.occ"]=post_z,
                       _["psi"]=post_psi);
 }
 

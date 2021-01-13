@@ -14,7 +14,7 @@ PGocc(formula, data_inputs, ndraws, alpha_m, beta_m, sigma_inv_alpha_p, sigma_in
   \item{formula }{ - Double right-hand side formula describing covariates of detection and occupancy in that order.}
   \item{data_inputs }{ - A named list that contains the elements W, X, and y.
 
-  W - A named list of data.frames of covariates that vary within sites. i.e. The dataframes are of dimension \code{n} (number of sites surveyed) by \code{J} where each row is associated with a site and each column represents a site visit. 'NA' values should be entered at locations that were not surveyed.
+  W - A named list of data.frames of covariates that vary within sites. i.e. The dataframes are of dimension \code{n} (number of sites surveyed) by \code{J} where each row is associated with a site and each column represents a site visit. \code{NA} values should be entered at locations that were not surveyed.
 
 e.g. Suppose \code{W} contained three dataframes \code{W1}, \code{W2} and \code{W3}.
 
@@ -30,14 +30,19 @@ e.g. Suppose \code{W} contained three dataframes \code{W1}, \code{W2} and \code{
   \item{beta_m }{ - The prior mean beta vector. Supply a matrix of the correct dimension.}
   \item{sigma_inv_alpha_p }{ - The alpha precision matrix (i.e. the inverse of the covariance matrix).}
   \item{sigma_inv_beta_p }{ - The beta precision matrix.}
-  \item{percent_burn_in }{ - The percentage of 'ndraws' used as burn-in samples. The argument entered should be between 0.0 and 1.0. No check however is done to assess whether the user has entered the correct argument here. }
-  \item{store_z }{ - A logical. 'store_z=TRUE' indicates that the 'z' and 'psi' samples are stored. Note that these are not stored by default. i.e. 'store_z=FALSE' is the default value for this argument.}
+  \item{percent_burn_in }{ - The percentage of \code{ndraws} used as burn-in samples. The argument entered should be between 0.0 and 1.0. No check however is done to assess whether the user has entered the correct argument here. }
+  \item{store_z }{ - A logical. \code{store_z=TRUE} indicates that the \code{z} and \code{psi} samples are stored. Note that these are not stored by default. i.e. \code{store_z=FALSE} is the default value for this argument.}
 }
 \details{
 The function undertakes MCMC sampling of the parameters of a single-season Bayesian occupancy model that uses Polya-Gamma random variables.
 }
 \value{
-\item{ }{  - The MCMC samples are returned as a named list with entries 'alpha', 'beta', 'z' and 'psi'. 'alpha', 'beta' are matrices where the number of rows equals to the number of regression effects and the number of columns equals to number of retained MCMC samples. The dimension of 'z' and 'psi' are 'number of surveyed sites' by 'number of retained MCMC samples'.}
+\item{ }{  - The MCMC samples are returned as a named list with entries \code{alpha} and \code{beta} (\code{real.occ} and \code{psi} are optional).}
+\item{}{  - \code{alpha}, \code{beta} are matrices where the number of rows equals to the number of regression effects and the number of columns equals to number of retained MCMC samples. The dimension of \code{z} and \code{psi} are \code{number of surveyed sites} by \code{number of retained MCMC samples}.}
+\item{ }{  - \code{alpha} = the regression effects of the detection process;}
+\item{ }{  - \code{beta} = the regression effects of the occupancy process;}
+\item{ }{  - \code{real.occ} = the estimate of the true occupancy variable;}
+\item{ }{  - \code{psi} = conditional occupancy probabilities.}
 }
 \references{
 %% ~put references to the literature/web site here ~

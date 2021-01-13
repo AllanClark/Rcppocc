@@ -58,10 +58,10 @@ No thinning is undertaken.}
 }
 \details{The function undertakes MCMC sampling of the parameters of a single-season Bayesian spatial occupancy (Binomial) model that uses a Gaussian approximation to a Polya Gamma distribuition.
 
-Here the detection process is modelled as a Binomial random variable. Specifically we assume that \ifelse{html}{\out{y<sub>i</sub>|z<sub>i</sub>~Binom(K<sub>i</sub>,z<sub>i</sub>*p<sub>i</sub>)}}{} where \ifelse{html}{\out{y<sub>i</sub>}}{} and \ifelse{html}{\out{p<sub>i</sub>}}{} are ther number of surveys to site \eqn{i} and \ifelse{html}{\out{p<sub>i</sub>}}{} is the conditional detection probability for site \eqn{i}.
+Here the detection process is modelled as a Binomial random variable. Specifically we assume that \ifelse{html}{\out{y<sub>i</sub>|z<sub>i</sub>~Binom(K<sub>i</sub>,z<sub>i</sub>*p<sub>i</sub>)}}{} where \ifelse{html}{\out{y<sub>i</sub>}}{} and \ifelse{html}{\out{p<sub>i</sub>}}{} are the number of surveys to site \code{i} and \ifelse{html}{\out{p<sub>i</sub>}}{} is the conditional detection probability for site \code{i}.
 }
 \value{
-\item{ }{  - The MCMC samples are returned as a named list with entries \eqn{alpha}, \eqn{beta}, \eqn{theta}, \eqn{tau}, \eqn{real.occ} (the true occupancy status) and \eqn{psi}. }
+\item{ }{  - The MCMC samples are returned as a named list with entries \code{alpha}, \code{beta}, \code{theta}, \code{tau}, \code{real.occ} (the true occupancy status) and \code{psi}. }
 }
 \references{
 %% ~put references to the literature/web site here ~
