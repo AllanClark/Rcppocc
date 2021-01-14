@@ -1,0 +1,616 @@
+---
+title: "How to fit a RSR model using Rcppocc."
+author: "Allan Clark"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{How to fit a RSR model using Rcppocc.}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+  \usepackage{amsmath}
+---
+
+<br>
+
+## 1. Introduction
+
+The aim of a spatial occupancy analysis is to use data at *surveyed locations* to produce a map of the conditional occupancy probability at all locations in the study (i.e. surveyed and unsurveyed locations). In the following document I explain how to use the `Rcppocc` package to undertake this task. The first example uses a data set from the `Rcppocc` package while the second example uses raw data extracted from the $2^{nd}$ SABAP database.
+
+Before starting I first load a number of packages and functions that will be used (these have been hidden from the output below but included at the end of the file). You might have to install various packages if you don't already have them. The specific packages used are: Rcppocc, openxlsx, maptools, stocc, PBSmapping, mapdata, coda and RColorBrewer.
+
+```{r, eval=TRUE, echo=FALSE, message=FALSE}
+#Add some explanations regarding what the functions do
+
+#Some functions used below are listed here
+#required packages are also loaded
+#--------------------------------------------------------------------------------------
+require(Rcppocc)
+require(openxlsx)
+require(maptools)
+require(stocc)
+require(PBSmapping)
+require(mapdata)
+require(RColorBrewer)
+#--------------------------------------------------------------------------------------
+
+.pardefault <- par(no.readonly = T)
+
+make_coords<-function(xy){
+    #this assumes that the centroids of QDGC were calculated by using 0.25/2
+    x<-xy[1]
+    y<-xy[2]
+    shift<- 0.25/2
+    a1<-c(x-shift,y+shift)
+    a2<-c(x+shift, y+shift)
+    a3<-c(x+shift, y-shift)
+    a4<-c(x-shift, y-shift)
+    #a5<-a1
+    df<-as.data.frame(rbind(a1,a2,a3,a4))
+    df<-cbind(0, 1:4, df)
+    colnames(df)<-c("PID","POS","X","Y")
+    return(df)
+}
+
+image.scale <- function(z, zlim, col = heat.colors(12),
+                        breaks, horiz=TRUE, ylim=NULL, xlim=NULL, side=2, cex.axis=1, ...)
+{
+    #Taken from "me nugget" 
+    #See http://menugget.blogspot.co.za/2013/12/new-version-of-imagescale-function.html
+    if(!missing(breaks)){
+         if(length(breaks) != (length(col)+1)){stop("must have one more break than colour")}
+    }
+    if(missing(breaks) & !missing(zlim)){
+         breaks <- seq(zlim[1], zlim[2], length.out=(length(col)+1))
+    }
+    if(missing(breaks) & missing(zlim)){
+         zlim <- range(z, na.rm=TRUE)
+         zlim[2] <- zlim[2]+c(zlim[2]-zlim[1])*(1E-3)#adds a bit to the range in both directio
+         ns
+         zlim[1] <- zlim[1]-c(zlim[2]-zlim[1])*(1E-3)
+         breaks <- seq(zlim[1], zlim[2], length.out=(length(col)+1))
+    }
+    poly <- vector(mode="list", length(col))
+    for(i in seq(poly)){
+         poly[[i]] <- c(breaks[i], breaks[i+1], breaks[i+1], breaks[i])
+    }
+    xaxt <- ifelse(horiz, "s", "n")
+    #yaxt <- ifelse(horiz, "n", "s")
+    yaxt <- "n"
+    if(horiz){YLIM<-c(0,1); XLIM<-range(breaks)}
+    if(!horiz){YLIM<-range(breaks); XLIM<-c(0,1)}
+    if(missing(xlim)) xlim=XLIM
+    if(missing(ylim)) ylim=YLIM
+    plot(1,1,t="n",ylim=ylim, xlim=xlim, xaxt=xaxt, yaxt=yaxt, xaxs="i", yaxs="i", ...)
+    axis(side=side, cex.axis=cex.axis, tick=FALSE)
+    for(i in seq(poly)){
+         if(horiz){
+              polygon(poly[[i]], c(0,0,1,1), col=col[i], border=NA)
+         }
+         if(!horiz){
+              polygon(c(0,0,1,1), poly[[i]], col=col[i], border=NA)
+         }
+    }
+
+    return(col)
+}
+
+make_map<-function(map_variable, ngroups_colours, caption, multi_maps=FALSE){
+
+   par(mar=c(0,0,2,0))
+   if (multi_maps==FALSE){
+        layout(matrix(c(1,2), nrow=1, ncol=2), widths=c(1,12), heights=c(1,4))
+   }else {print("Specify layout before using this function!")}
+   #layout(matrix_spec, widths=width_spec, heights=height_spec)
+
+   #breaks <- seq(min(map_variable), max(map_variable),length.out=ngroups_colours)
+   breaks <- seq(0, 1,length.out=ngroups_colours)
+   #Colours<-colorRampPalette(rainbow(ngroups_colours))
+   Colours<-colorRampPalette(c("white","red"))
+   is<-image.scale(map_variable, col=Colours(length(breaks)-1), breaks=breaks, horiz=F, xlab="", ylab="", side=4, cex.axis=.6)
+   box()
+
+   mm<-map("worldHires","South Africa", xlim=c(15,33), ylim = c(-35, -21),
+           boundary=T, plot=F)
+   plot(mm$x, mm$y, xlab="Longitude", ylab="Latitude", type="n", xaxt="n", yaxt="n", main=caption)
+
+   Colours<-colorRampPalette(c("white","red"))(ngroups_colours)[as.numeric(cut(map_variable,ngroups_colours))]
+
+   for (i in 1:nrow(species_list[[8]])){
+        xx<-make_coords(c(species_list[[8]][i,1], species_list[[8]][i,2]))
+        polygon(xx[,3], xx[,4], col= Colours[i], border=NA)
+        #polygon(xx[,3], xx[,4], col= "red", border=NULL)
+   }
+   lines(mm$x, mm$y, xlab="Longitude", ylab="Latitude")
+}
+
+make_map2<-function(map_variable, ngroups_colours, caption, xycords, cex.axis=1){
+   #map_variable<-psi_mean_vb
+   #ngroups_colours<-20
+   #caption = some caption that will be placed at the top of the map
+   #xycords = matrix with x and y
+   #cex.axis = scale factor for the x axis
+
+   #print("Specify layout and par before using this function!")
+
+   breaks <- seq(min(map_variable), max(map_variable),length.out=ngroups_colours)
+   cbPalette <- brewer.pal(n=9, name="YlOrRd")
+   Colours<-colorRampPalette(cbPalette)
+   plot(1, type="n", xaxt="n", yaxt="n", bty="n")
+
+   is<-image.scale(map_variable, col=Colours(length(breaks)-1), breaks=breaks, horiz=F, xlab="", ylab="", side=2, cex.axis=cex.axis)
+   box()
+
+   mm<-map("worldHires","South Africa", xlim=c(15,33), ylim = c(-35, -21),
+           boundary=T, plot=F)
+   plot(mm$x, mm$y, xlab="Longitude", ylab="Latitude", type="n", xaxt="n", yaxt="n", main=caption)
+
+   #Colours<-colorRampPalette(c("white","red"))(ngroups_colours)[as.numeric(cut(map_variable,ngroups_colours))]
+   #Colours<-colorRampPalette(rainbow(ngroups_colours))(ngroups_colours)[as.numeric(cut(map_variable,ngroups_colours))]
+   Colours<-colorRampPalette(cbPalette)(ngroups_colours)[as.numeric(cut(map_variable,ngroups_colours))]
+
+   for (i in 1:nrow(xycords)){
+        xx<-make_coords( c(xycords[i,]) )
+        polygon(xx[,3], xx[,4], col= Colours[i], border=NA)
+        #polygon(xx[,3], xx[,4], col= "red", border=NULL)
+   }
+   lines(mm$x, mm$y, xlab="Longitude", ylab="Latitude")
+}
+
+lat.long.table <- data.frame(row.names =c("AA", "AB", "AC", "AD", "BA", "BB","BC", "BD", "CA", "CB", "CC", "CD", "DA", "DB", "DC", "DD"),LatSum = c (0,0,0.25, 0.25, 0, 0, 0.25, 0.25, 0.5, 0.5, 0.75, 0.75, 0.5, 0.5, 0.75, 0.75),LongSum = c(0, 0.25, 0, 0.25, 0.5, 0.75, 0.5, 0.75, 0, 0.25, 0, 0.25, 0.5,0.75, 0.5, 0.75))
+```
+<br>
+
+# 2. Example 1: Use data stored in the `Rcppocc` package
+<br>
+
+First load the example data set. 
+
+The data set relates to a *simulated spatial occupancy data set*. It relates to 1881 grid-cells that span South Africa; 805 of which were surveyed a number of times (at least 3 times and at most 50 times) while the remaining were unsurveyed. Site-specific covariate data exists (2 covariates) at *all grid-cells* while detection specific data (1 covariate) exists at 805 locations. The first 805 locations refers to surveyed locations while the rest are unsurveyed locations. 
+
+```{r}
+require(Rcppocc)
+data("SpatSimData")
+```
+
+`SpatSimData` contains many objects however I will only discuss what is really necessary to undertake an anaylysis using `Rcppocc`. Type `?SpatSimData` for more details regarding the object.  
+<br>
+
+## 2.1 Data required
+<br>
+
+You will need the following to undertake an analysis:  
+* The coordinates of your grid-cells. These are normally the centre of a rectangular area.   
+* Site-specific covariates to model the occupancy process.  
+* Detection covariates.  
+
+We use the `make.so.data` function from the `stocc` package to bundle all necessary data together. `make.so.data` has three arguments namely:  
+* `visit.data`      
+* `site.data`       
+* `names`  
+
+Below I first briefly explain what the above objects are and thereafter I show you how to construct them. 
+
+```{r, eval=TRUE, echo=FALSE}
+xycords <- SimTable$xycords
+psi <- SimTable$psi
+z <- SimTable$z
+alpha <- SimTable$alpha
+
+Nvisits_surveyed <- SimTable$Nvisits_surveyed
+
+Xmat <- SimTable$Xmat
+Minv <- SimTable$Minv
+Q <- SimTable$Q
+Kmat <- SimTable$Kmat
+Wmat <- SimTable$Wmat
+
+pij <- SimTable$pij
+Ysim <- SimTable$Ysim
+
+nsites <- SimTable$nsites
+Num_surveys <- SimTable$Num_surveys
+N_maxvisits <- SimTable$N_maxvisits
+
+surveyIndex <- 1:Num_surveys #surveyIndex are the ids of the surveyed locations
+siteIndex <- 1:nsites #ids for all sites considered
+
+Site.Data <- as.data.frame( cbind( siteIndex, xycords,Xmat ) )
+colnames(Site.Data)<- c("SiteName", "Longitude", "Latitude", "PC1", "PC2")
+
+PAdata <- na.omit(c(t(Ysim))) #presence-absence data
+SiteNamereps <- rep(surveyIndex, Nvisits_surveyed) #the site names
+nspp <- na.omit(c(t(Wmat))) #detection covariate
+Longitudereps <- rep(xycords[surveyIndex,1], Nvisits_surveyed)
+Latitudereps <- rep(xycords[surveyIndex,2], Nvisits_surveyed)
+
+Visit.data <- data.frame(SiteNamereps, Longitudereps, Latitudereps, nspp, PAdata)
+colnames(Visit.data) <- c("SiteName", "Longitude", "Latitude", "nspp", "PAdata")
+
+Names <- list(visit = list(site = "SiteName", obs = "PAdata"),
+              site = list(site = "SiteName", coords = c("Longitude", "Latitude")) )
+
+require(stocc)
+Make.so.data <- make.so.data(visit.data = Visit.data, site.data = Site.Data, names = Names)
+```
+<br>
+
+`visit.data` is a data frame that contains the observed occupancy for each site and any detection related covariates. The data frame looks as follows: 
+\begin{align}
+\left[
+\begin{matrix}
+\textrm{SiteName for site 1} & \textrm{longitude}  & \textrm{latitude}  & \textrm{detection_covariates}  & \textrm{PAdata}  \\
+\textrm{SiteName for site 2} & \textrm{longitude}  & \textrm{latitude} & \textrm{detection_covariates}  & \textrm{PAdata}  \\
+\vdots & \vdots & \vdots&  \vdots  & \vdots  \\
+\textrm{SiteName for site n} & \textrm{longitude}  & \textrm{latitude} & \textrm{detection_covariates}  & \textrm{PAdata}  \\
+\end{matrix}\right]
+\end{align}
+Each row in the above matrix could represent a matrix depending on the number of surveys to each site. For example if there are $5$ surveys to site $1$ then there would be $5$ rows of data for site 1. 
+
+Below I display the first and the last 6 rows of the `Visit.data` data frame. Notice that I include a variable named `SiteName` that identifies each of the grid-cells using a unique identifier. The object `nspp` is a detection covariate while `PAdata` is the observed presence-absence data. `PAdata` is $0$ if the species was not observed during the particular survey and $1$ if the species was observed.
+
+```{r}
+head(Visit.data)
+```
+
+```{r}
+tail(Visit.data)
+```
+<br>
+
+`site.data` is a data frame that contains the site id (`SiteName`), coordinates (`Longitude` and `Latitude`), and any habitat related covariates that might influence the occupancy process. The data frame looks as follows: 
+\begin{align}
+\left[
+\begin{matrix}
+\textrm{SiteName} & \textrm{longitude}  & \textrm{latitude}  & \textrm{occupancy_covariates}
+\end{matrix}\right]
+\end{align}
+
+```{r}
+head(Site.Data)
+```
+<br>
+
+`names` is a named list with the following elements: `visit` and `site`.   
+* `visit` is a named list with elements "site" = the name of the site id in the observation data frame and "obs" = the name of the observed occupancy variable.  
+* `site` is a named list with elements "site" = the name of the site id and "coords" = a character vector giving the name of the coordinates (x first then y)  
+
+Note that `Names`, `Names$visit` and `Names$site` are all lists. 
+
+```{r}
+c(class(Names), class(Names$visit), class(Names$site))
+```
+
+```{r}
+Names
+```
+<br>
+
+## 2.2 How to create the data objects
+<br>
+
+Lets define a few constants before we start.  
+* `nsites` is the total number of sites being analysed (1881).    
+* `Num_surveys` is the total number of sites surveyed (805).     
+* `N_maxvisits` is the maximum number of visits per site (50).    
+* `Nvisits_surveyed` is the number of visits to each site.    
+
+```{r}
+nsites <- SimTable$nsites
+Num_surveys <- SimTable$Num_surveys
+N_maxvisits <- SimTable$N_maxvisits
+Nvisits_surveyed <- SimTable$Nvisits_surveyed
+
+head(Nvisits_surveyed)
+```
+
+Let now create `Site.Data`. 
+
+```{r}
+surveyIndex <- 1:Num_surveys #surveyIndex are the ids of the surveyed locations
+siteIndex <- 1:nsites #ids for all sites considered
+
+xycords <- SimTable$xycords #longitude and latititude
+head(xycords)
+
+Xmat <- SimTable$Xmat #occupancy covariates
+head(Xmat)
+
+Site.Data <- as.data.frame( cbind( siteIndex, xycords, Xmat ) )
+colnames(Site.Data)<- c("SiteName", "Longitude", "Latitude", "PC1", "PC2")
+```
+
+`Visit.Data` is created as follows:
+
+`Ysim` contains the presence-absence data. The matrix is $805 \times 50$ and contains `na` values whenever no surveys are performed at a site.
+```{r}
+Ysim <- SimTable$Ysim
+head(Ysim)
+```
+
+The one detection covariate is stored in `SimTable$Wmat`. I then create a vector `nspp` and store the non-missing values of `Wmat`. If there are more than one detection covariate, the other covariates can be created similarly.
+```{r}
+Wmat <- SimTable$Wmat
+dim(Wmat)
+```
+
+
+```{r}
+nspp <- na.omit(c(t(Wmat))) #detection covariate
+```
+
+```{r}
+#detection dataframe - only at surveyed locations
+PAdata <- na.omit(c(t(Ysim))) #presence-absence data
+SiteNamereps <- rep(surveyIndex, Nvisits_surveyed) #the site names
+
+Longitudereps <- rep(xycords[surveyIndex,1], Nvisits_surveyed)
+Latitudereps <- rep(xycords[surveyIndex,2], Nvisits_surveyed)
+
+#at surveyed locations
+Visit.data <- data.frame(SiteNamereps, Longitudereps, Latitudereps, nspp, PAdata)
+colnames(Visit.data) <- c("SiteName", "Longitude", "Latitude", "nspp", "PAdata")
+```
+
+`Names` is constructed as follows: 
+```{r}
+Names <- list(visit = list(site = "SiteName", obs = "PAdata"),
+              site = list(site = "SiteName", coords = c("Longitude", "Latitude")) )
+
+Names
+```
+
+Now we use `make.so.data` to put everything together.
+```{r}
+require(stocc) #loaded the stocc package!
+Make.so.data <- make.so.data(visit.data = Visit.data, site.data = Site.Data, names = Names)
+```
+<br>
+
+### 2.4 Fitting the spatial model
+<br>
+
+We first set the parameters required for the prior distribution. We have one detection covariate and two occupancy covariates. Since an intercept is included in both the detection and occupancy processes `Q.d` and `Q.o` are $2 \times 2$ and $3 \times 3$ respectively. The following chunk should be fairly self explanatory.
+
+```{r}
+#Set the prior distributions used
+nalphas<-2
+nbetas<-3
+beta_m<-matrix( rep(0,nbetas), ncol=1)
+sigma_inv_beta_p<-diag(nbetas)/1000 #prior inverse covariance for beta
+alpha_m<-matrix( rep(0,nalphas), ncol=1)
+sigma_inv_alpha_p<-diag(nalphas)/1000 #prior inverse covariance for alpha
+numSpatre<-188
+
+prior.list <- list(a.tau = 0.5, b.tau = 0.0005,tau=1,
+                   Q.d=sigma_inv_alpha_p,
+                   mu.d = alpha_m,
+                   Q.o=sigma_inv_beta_p,
+                   mu.o = beta_m)
+```
+
+`spatial.model` is defined as follows:
+```{r}
+spatial.list <- list(threshold = 0.36, moran.cut = numSpatre)
+```
+The threshold component is used the create neighborhoods in the RSR model. Have a look at `stocc::icar.Q` when specifying the threshold value. (add more detail regarding this later...)
+
+The MCMC sampling for the model is produced as follows
+```{r}
+#mcmc settings
+#These should be increased and are simply set to make it fairly fast to run!
+niter <- 50
+nthin <- 1
+
+t1_logit <- proc.time()
+
+spat_logit <- occSPATlogit(detection.model= ~ nspp, occupancy.model= ~ PC1 + PC2,
+                                 spatial.model = spatial.list,
+                                 so.data = Make.so.data,
+                                 prior = prior.list,
+                                 control = list(ndraws =niter,
+                                 percent_burn_in = 0.5))
+
+t2_logit <- proc.time()
+RcppTimer <- t2_logit-t1_logit
+RcppTimer #in seconds
+```
+<br>
+
+### Some outputs
+<br>
+
+(Expand this section later...)
+
+```{r}
+names(spat_logit)
+dim(spat_logit$alpha) #note the dimensions! i.e. row matrices
+dim(spat_logit$beta)
+```
+
+Some summary statistics.
+```{r}
+apply(spat_logit$beta,1,mean)
+apply(spat_logit$alpha,1,mean)
+apply(spat_logit$tau,1,mean)
+```
+
+```{r, eval=FALSE}
+require(coda)
+alpha_mcmc <- as.mcmc( t(spat_logit$alpha) )
+summary(alpha_mcmc)
+effectiveSize(alpha_mcmc) #the effective sample size
+```
+
+```{r, eval=FALSE}
+par(mfrow=c(2,2))
+traceplot(alpha_mcmc)
+densplot(alpha_mcmc)
+```
+
+```{r, eval=FALSE}
+autocorr.plot(alpha_mcmc)
+```
+A species distribution map.
+```{r, eval=FALSE}
+par(mfrow=c(1,3), mar=c(3,.5,1,.5))
+lo<-layout(matrix(c(1,2,3), nrow=1, ncol=3), widths=c(.5,1,10), heights=c(4,4,4))
+locc <-apply(spat_logit$real.occ,1,mean)
+make_map2( locc, 200, "", xycords  , cex.axis=.95)
+```
+<br>
+
+### The code chunk from Section 1
+<br>
+
+```{r, eval=FALSE, message=FALSE}
+#Add some explanations regarding what the functions do
+
+#Some functions used below are listed here
+#required packages are also loaded
+#--------------------------------------------------------------------------------------
+require(Rcppocc)
+require(openxlsx)
+require(maptools)
+require(stocc)
+require(PBSmapping)
+require(mapdata)
+require(RColorBrewer)
+#--------------------------------------------------------------------------------------
+
+.pardefault <- par(no.readonly = T)
+
+make_coords<-function(xy){
+    #this assumes that the centroids of QDGC were calculated by using 0.25/2
+    x<-xy[1]
+    y<-xy[2]
+    shift<- 0.25/2
+    a1<-c(x-shift,y+shift)
+    a2<-c(x+shift, y+shift)
+    a3<-c(x+shift, y-shift)
+    a4<-c(x-shift, y-shift)
+    #a5<-a1
+    df<-as.data.frame(rbind(a1,a2,a3,a4))
+    df<-cbind(0, 1:4, df)
+    colnames(df)<-c("PID","POS","X","Y")
+    return(df)
+}
+
+image.scale <- function(z, zlim, col = heat.colors(12),
+                        breaks, horiz=TRUE, ylim=NULL, xlim=NULL, side=2, cex.axis=1, ...)
+{
+    #Taken from "me nugget" 
+    #See http://menugget.blogspot.co.za/2013/12/new-version-of-imagescale-function.html
+    if(!missing(breaks)){
+         if(length(breaks) != (length(col)+1)){stop("must have one more break than colour")}
+    }
+    if(missing(breaks) & !missing(zlim)){
+         breaks <- seq(zlim[1], zlim[2], length.out=(length(col)+1))
+    }
+    if(missing(breaks) & missing(zlim)){
+         zlim <- range(z, na.rm=TRUE)
+         zlim[2] <- zlim[2]+c(zlim[2]-zlim[1])*(1E-3)#adds a bit to the range in both directio
+         ns
+         zlim[1] <- zlim[1]-c(zlim[2]-zlim[1])*(1E-3)
+         breaks <- seq(zlim[1], zlim[2], length.out=(length(col)+1))
+    }
+    poly <- vector(mode="list", length(col))
+    for(i in seq(poly)){
+         poly[[i]] <- c(breaks[i], breaks[i+1], breaks[i+1], breaks[i])
+    }
+    xaxt <- ifelse(horiz, "s", "n")
+    #yaxt <- ifelse(horiz, "n", "s")
+    yaxt <- "n"
+    if(horiz){YLIM<-c(0,1); XLIM<-range(breaks)}
+    if(!horiz){YLIM<-range(breaks); XLIM<-c(0,1)}
+    if(missing(xlim)) xlim=XLIM
+    if(missing(ylim)) ylim=YLIM
+    plot(1,1,t="n",ylim=ylim, xlim=xlim, xaxt=xaxt, yaxt=yaxt, xaxs="i", yaxs="i", ...)
+    axis(side=side, cex.axis=cex.axis, tick=FALSE)
+    for(i in seq(poly)){
+         if(horiz){
+              polygon(poly[[i]], c(0,0,1,1), col=col[i], border=NA)
+         }
+         if(!horiz){
+              polygon(c(0,0,1,1), poly[[i]], col=col[i], border=NA)
+         }
+    }
+
+    return(col)
+}
+
+make_map<-function(map_variable, ngroups_colours, caption, multi_maps=FALSE){
+                 #matrix_spec=matrix(c(1,2), nrow=1, ncol=2),
+                 #width_spec=c(1,12),
+                 #height_spec=c(1,4)){
+   #map_variable<-psi_mean_vb
+   #ngroups_colours<-20
+
+   par(mar=c(0,0,2,0))
+   if (multi_maps==FALSE){
+        layout(matrix(c(1,2), nrow=1, ncol=2), widths=c(1,12), heights=c(1,4))
+   }else {print("Specify layout before using this function!")}
+   #layout(matrix_spec, widths=width_spec, heights=height_spec)
+
+   #breaks <- seq(min(map_variable), max(map_variable),length.out=ngroups_colours)
+   breaks <- seq(0, 1,length.out=ngroups_colours)
+   #Colours<-colorRampPalette(rainbow(ngroups_colours))
+   Colours<-colorRampPalette(c("white","red"))
+   is<-image.scale(map_variable, col=Colours(length(breaks)-1), breaks=breaks, horiz=F, xlab="", ylab="", side=4, cex.axis=.6)
+   box()
+
+   mm<-map("worldHires","South Africa", xlim=c(15,33), ylim = c(-35, -21),
+           boundary=T, plot=F)
+   plot(mm$x, mm$y, xlab="Longitude", ylab="Latitude", type="n", xaxt="n", yaxt="n", main=caption)
+
+   Colours<-colorRampPalette(c("white","red"))(ngroups_colours)[as.numeric(cut(map_variable,ngroups_colours))]
+
+   for (i in 1:nrow(species_list[[8]])){
+        xx<-make_coords(c(species_list[[8]][i,1], species_list[[8]][i,2]))
+        polygon(xx[,3], xx[,4], col= Colours[i], border=NA)
+        #polygon(xx[,3], xx[,4], col= "red", border=NULL)
+   }
+   lines(mm$x, mm$y, xlab="Longitude", ylab="Latitude")
+}
+
+make_map2<-function(map_variable, ngroups_colours, caption, xycords, cex.axis=1){
+   #map_variable<-psi_mean_vb
+   #ngroups_colours<-20
+   #caption = some caption that will be placed at the top of the map
+   #xycords = matrix with x and y
+   #cex.axis = scale factor for the x axis
+
+   #print("Specify layout and par before using this function!")
+
+   breaks <- seq(min(map_variable), max(map_variable),length.out=ngroups_colours)
+   cbPalette <- brewer.pal(n=9, name="YlOrRd")
+   Colours<-colorRampPalette(cbPalette)
+   plot(1, type="n", xaxt="n", yaxt="n", bty="n")
+
+   is<-image.scale(map_variable, col=Colours(length(breaks)-1), breaks=breaks, horiz=F, xlab="", ylab="", side=2, cex.axis=cex.axis)
+   box()
+
+   mm<-map("worldHires","South Africa", xlim=c(15,33), ylim = c(-35, -21),
+           boundary=T, plot=F)
+   plot(mm$x, mm$y, xlab="Longitude", ylab="Latitude", type="n", xaxt="n", yaxt="n", main=caption)
+
+   #Colours<-colorRampPalette(c("white","red"))(ngroups_colours)[as.numeric(cut(map_variable,ngroups_colours))]
+   #Colours<-colorRampPalette(rainbow(ngroups_colours))(ngroups_colours)[as.numeric(cut(map_variable,ngroups_colours))]
+   Colours<-colorRampPalette(cbPalette)(ngroups_colours)[as.numeric(cut(map_variable,ngroups_colours))]
+
+   for (i in 1:nrow(xycords)){
+        xx<-make_coords( c(xycords[i,]) )
+        polygon(xx[,3], xx[,4], col= Colours[i], border=NA)
+        #polygon(xx[,3], xx[,4], col= "red", border=NULL)
+   }
+   lines(mm$x, mm$y, xlab="Longitude", ylab="Latitude")
+}
+
+lat.long.table <- data.frame(row.names =c("AA", "AB", "AC", "AD", "BA", "BB","BC", "BD", "CA", "CB", "CC", "CD", "DA", "DB", "DC", "DD"),LatSum = c (0,0,0.25, 0.25, 0, 0, 0.25, 0.25, 0.5, 0.5, 0.75, 0.75, 0.5, 0.5, 0.75, 0.75),LongSum = c(0, 0.25, 0, 0.25, 0.5, 0.75, 0.5, 0.75, 0, 0.25, 0, 0.25, 0.5,0.75, 0.5, 0.75))
+```
+
+<br>
+
+# 3. Example 2: Use data extracted from the SABAP database
+<br>
+
+
