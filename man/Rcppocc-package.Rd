@@ -16,7 +16,6 @@
 \itemize{
   \item{A single season Bayesian occupancy (SSO) model using \link{PGocc}, \link{PGocc2} and \link{dRUMocc}. It is suggested that you use \link{PGocc2} if you are familiar with the \link{stocc} package.}
   \item{A SSO Bayesian spatial model (specifically a restricted spatial regression model) using \link{occSPATlogit}.}
-  \item{standard occupancy model as well a restricted spatial models can be undertaken.}
   \item{A SSO Bayesian spatial occupancy model using a Gaussian approximation to a Polya-Gamma distribuition. This model is termed the Binomial Gaussian model. See \link{occSPATlogitBinom}.}
   \item{A SSO Bayesian spatial occupancy (Binomial) model using Polya-Gamma latent variables. See \link{occSPATlogitBinomPG}.}
   \item{The implementation of a consensus model with \code{k} subsets using a Gaussian approximation to a Polya Gamma distribution. See \link{occSPATlogitConsBinom}.}

@@ -1,8 +1,13 @@
-'Rcppocc' is a package that can be used to fit single-season Bayesian occupancy 
-models as well as a restricted spatial regression (RSRS) occupancy model. 
-models as well as a restricted spatial regression (RSR) occupancy model. 
-It is assumed that the regression effects are modelled using logit link 
-functions.
+'Rcppocc' is a package that allows the user to build various Bayesian occupancy models. We specifically assume that the regression effects all use logit link functions. Gibbs sampling algorithms are developed to undertake all MCMC sampling.
+
+At present the following models can be fit:
+1. A single season Bayesian occupancy (SSO) model using 'PGocc', 'PGocc2' and 'dRUMocc'. It is suggested that you use 'PGocc2' if you are familiar with the 'stocc' package.
+2. A SSO Bayesian spatial model (specifically a restricted spatial regression model) using 'occSPATlogit'.
+3. A SSO Bayesian spatial occupancy model using a Gaussian approximation to a Polya-Gamma distribuition. This model is termed the Binomial Gaussian model. See 'occSPATlogitBinom'.
+4. A SSO Bayesian spatial occupancy (Binomial) model using Polya-Gamma latent variables. See 'occSPATlogitBinomPG'.
+5. The implementation of a consensus model with 'k' subsets using a Gaussian approximation to a Polya Gamma distribution. See 'occSPATlogitConsBinom'.
+6. The implementation of a consensus model with 'k' subsets using the Binomial Polya-Gamma model. See 'occSPATlogitConsPG'.
+
 
 The following package can be installed as follows: 
 --------------------------------------------------

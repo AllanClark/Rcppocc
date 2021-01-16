@@ -6,10 +6,7 @@ Version: 1.1
 Date: 2021-01-21
 Authors@R: person("Allan", "Clark", email="allan.clark@uct.ac.za",
   role = c("aut", "cre"))
-Description: The following package allows the user to build various nonspatial and spatial Bayesian 
-  occupancy models. We specifically assume that the regression 
-  effects all use logit link functions. Gibbs sampling algorithms are developed 
-  to undertake all MCMC sampling.
+Description: The following package allows the user to build various nonspatial and spatial Bayesian occupancy models. We specifically assume that the regression effects all use logit link functions. Gibbs sampling algorithms are developed to undertake all MCMC sampling.
 License: GPL
 Imports: 
   Rcpp (>= 0.12.18),
