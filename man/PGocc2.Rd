@@ -92,6 +92,7 @@ colnames(Site.Data)<- c("SiteName", "Longitude", "Latitude", "PC1", "PC2")
 head(Site.Data)
 
 #detection dataframe - only at surveyed locations
+Ysim <- SimTable$Ysim
 PAdata <- na.omit(c(t(Ysim))) #presence-absence data
 Nvisits_surveyed <- SimTable$Nvisits_surveyed
 SiteNamereps <- rep(surveyIndex, Nvisits_surveyed) #the site names

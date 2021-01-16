@@ -20,7 +20,8 @@ Imports:
   SDraw,
   foreach,
   doParallel,
-  sp
+  sp,
+  rARPACK
 LinkingTo: 
   Rcpp, 
   RcppArmadillo, 
