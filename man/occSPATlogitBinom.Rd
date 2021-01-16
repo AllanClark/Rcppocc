@@ -8,7 +8,8 @@ The function undertakes MCMC sampling of the parameters of a single-season Bayes
 }
 
 \usage{
-occSPATlogitBinom(detection.model, occupancy.model, spatial.model, so.data, prior, control, stat, k)
+occSPATlogitBinom(detection.model, occupancy.model, spatial.model,
+so.data, prior, control, stat, k)
 }
 \arguments{
 \item{detection.model}{A formula object describing the detection portion of
@@ -68,19 +69,6 @@ Here the detection process is modelled as a Binomial random variable. Specifical
 \item{ }{  - \code{tau_mat} = the spatial precision parameter;}
 \item{ }{  - \code{real.occ} = the estimate of the true occupancy variable;}
 \item{ }{  - \code{psi} = conditional occupancy probabilities.}
-}
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
-}
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
 data("SpatSimData")
@@ -178,6 +166,3 @@ names(spat_logitBin)
 dim(spat_logitBin$alpha) #note the dimensions! i.e. row matrices
 #--------------------------------------------------------------------------
 }
-
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line

@@ -17,11 +17,12 @@ Imports:
   stocc,
   dplyr,
   SDraw,
+  RcppParallel,
   foreach,
+  parallel,
   doParallel,
   sp,
-  rARPACK,
-  parallel
+  rARPACK
 LinkingTo: 
   Rcpp, 
   RcppArmadillo, 

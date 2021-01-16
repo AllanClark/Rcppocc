@@ -3,7 +3,7 @@ exportPattern("^[[:alpha:]]+")
 importFrom(Rcpp, evalCpp)
 
 #added in for RcppParallel!
-#importFrom(RcppParallel, RcppParallelLibs)
+importFrom(RcppParallel, RcppParallelLibs)
 
 #for the piping operator
 importFrom(dplyr,"%>%")

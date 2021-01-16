@@ -253,39 +253,39 @@ PGocc2 <- function(detection.model,
 
 #Code for running the Bayesian analysis using jagsUI
 #a simple single season occupancy model
-writeLines("
-      model{
-
-      #likelihood part
-      for (i in 1:n) #loop over each site
-      {
-          #loop over the number of visits per site
-          #make general later
-          #ie the number of surveys should be generalized
-          #beta vector and alpha vector should be generalized
-
-          #state occupancy
-          zb[i] ~ dbern(pz[i])
-          logit(pz[i]) <- beta0 + beta1*X[i]
-
-          for (j in 1:J) #loop over the number of visits per site
-          {
-               #observation process
-               Y[i,j] ~ dbern(py[i,j])
-               py[i,j] <- zb[i]*pd[i,j]
-               logit(pd[i,j])<- alpha0 + alpha1*W[i,j,2]
-          }#end loop over surveys
-      }#end loop over sites
-
-      alpha0 ~ dnorm(0, 0.001)
-      alpha1 ~ dnorm(0, 0.001)
-
-      beta0 ~ dnorm(0, 0.001)
-      beta1 ~ dnorm(0, 0.001)
-
-      #occupied <-sum(zb[])
-}##model
-", con = "single_season_occupancy_model.txt")
+# writeLines("
+#       model{
+#
+#       #likelihood part
+#       for (i in 1:n) #loop over each site
+#       {
+#           #loop over the number of visits per site
+#           #make general later
+#           #ie the number of surveys should be generalized
+#           #beta vector and alpha vector should be generalized
+#
+#           #state occupancy
+#           zb[i] ~ dbern(pz[i])
+#           logit(pz[i]) <- beta0 + beta1*X[i]
+#
+#           for (j in 1:J) #loop over the number of visits per site
+#           {
+#                #observation process
+#                Y[i,j] ~ dbern(py[i,j])
+#                py[i,j] <- zb[i]*pd[i,j]
+#                logit(pd[i,j])<- alpha0 + alpha1*W[i,j,2]
+#           }#end loop over surveys
+#       }#end loop over sites
+#
+#       alpha0 ~ dnorm(0, 0.001)
+#       alpha1 ~ dnorm(0, 0.001)
+#
+#       beta0 ~ dnorm(0, 0.001)
+#       beta1 ~ dnorm(0, 0.001)
+#
+#       #occupied <-sum(zb[])
+# }##model
+# ", con = "single_season_occupancy_model.txt")
 #-------------------------------------------------------------------------------
 
 #rewriting the code so that it has a similar form to the stocc package!

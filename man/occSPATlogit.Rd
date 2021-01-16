@@ -57,7 +57,9 @@ No thinning is undertaken.}
 }
 
 \details{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+The function undertakes MCMC sampling of the parameters of a single-season Bayesian Restricted spatial regression model that uses Polya-Gamma random variables.
+
+The arguments used are MOSTLY the same as those for the \code{spatial.occupancy} function in the \code{stocc} package although the \code{initial.values} argument is not included at present.
 }
 \value{
 \item{ }{ - The MCMC samples are returned as a named list. The elements of the list are \code{alpha}, \code{beta}, \code{theta}, \code{tau_mat}, \code{real.occ} and \code{psi}.}
@@ -67,19 +69,6 @@ No thinning is undertaken.}
 \item{ }{  - \code{tau_mat} = the spatial precision parameter;}
 \item{ }{  - \code{real.occ} = the estimate of the true occupancy variable;}
 \item{ }{  - \code{psi} = conditional occupancy probabilities.}
-}
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
-}
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
 data("SpatSimData")
@@ -186,6 +175,3 @@ dim(spat_logit$alpha) #note the dimensions! i.e. row matrices
 #densplot(alpha_mcmc)
 #autocorr.plot(alpha_mcmc)
 }
-
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line

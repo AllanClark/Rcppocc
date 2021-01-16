@@ -33,19 +33,6 @@ occupancy data set.}
 \item{SimTable$Num_surveys}{ - the number of surveyed sites.}
 \item{SimTable$N_maxvisits}{ - the maximum number of visits to a grid-cell.}
 }
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
-}
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
 \examples{
 #Below we use simulated data to fit a RSR occupancy model
 
@@ -150,6 +137,3 @@ dim(spat_logit$alpha) #note the dimensions! i.e. row matrices
 #densplot(alpha_mcmc)
 #autocorr.plot(alpha_mcmc)
 }
-
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line

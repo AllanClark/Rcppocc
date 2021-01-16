@@ -34,7 +34,3 @@
 models for large data sets. Ecology, \url{http://dx.doi.org/10.1890/12-0564.1.}
 \item MacKenzie, D.I., Nichols, J.D., Lachman, G.B., Droege, S., Royle, J.A., Langtimm, C.A. (2002). Estimating site occupancy rates when detection probabilities are less than one. Ecology, 83(8): 2248-2255}
 }
-
-% Optionally other standard keywords, one per line, from file %
-% KEYWORDS in the R documentation directory %
-

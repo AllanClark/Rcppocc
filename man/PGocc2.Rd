@@ -60,19 +60,6 @@ The arguments used are MOSTLY the same as those for the \code{spatial.occupancy}
 \item{ }{  - \code{real.occ} = the estimate of the true occupancy variable;}
 \item{ }{  - \code{psi} = conditional occupancy probabilities.}
 }
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
-}
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
 \examples{
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 data("SpatSimData")
@@ -185,6 +172,3 @@ plot(density(occ$beta[1,]), main="", xlab=expression(beta[0]), col="red")
 plot(density(occ$beta[1,]), main="", xlab=expression(beta[1]), col="red")
 #--------------------------------------------------------------------------
 }
-
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line

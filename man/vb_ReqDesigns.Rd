@@ -21,23 +21,3 @@ vb_ReqDesigns(formula, design_mats)
 \item{W }{ - W matrix.}
 \item{X }{ - X matrix.}
 }
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
-}
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
-\examples{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-
-}
-
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line

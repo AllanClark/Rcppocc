@@ -8,7 +8,8 @@ The function undertakes MCMC sampling of the parameters of a single-season Bayes
 }
 
 \usage{
-PGocc(formula, data_inputs, ndraws, alpha_m, beta_m, sigma_inv_alpha_p, sigma_inv_beta_p, store_z)
+PGocc(formula, data_inputs, ndraws, alpha_m, beta_m,
+sigma_inv_alpha_p, sigma_inv_beta_p, percent_burn_in, store_z)
 }
 \arguments{
   \item{formula }{ - Double right-hand side formula describing covariates of detection and occupancy in that order.}
@@ -43,19 +44,6 @@ The function undertakes MCMC sampling of the parameters of a single-season Bayes
 \item{ }{  - \code{beta} = the regression effects of the occupancy process;}
 \item{ }{  - \code{real.occ} = the estimate of the true occupancy variable;}
 \item{ }{  - \code{psi} = conditional occupancy probabilities.}
-}
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
-}
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
 %% ~~objects to See Also as \code{\link{help}}, ~~~
@@ -136,6 +124,3 @@ plot(density(occ$beta[1,]), main="", xlab=expression(beta[0]), col="red")
 plot(density(occ$beta[1,]), main="", xlab=expression(beta[1]), col="red")
 #--------------------------------------------------------------------------
 }
-
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
