@@ -13,15 +13,15 @@ Description: The following package allows the user to build various Bayesian
   to undertake all MCMC sampling.
 License: GPL
 Imports: 
-  Rcpp (>= 0.12.18), 
-  RcppParallel, 
+  Rcpp (>= 0.12.18),
   stocc,
   dplyr,
   SDraw,
   foreach,
   doParallel,
   sp,
-  rARPACK
+  rARPACK,
+  parallel
 LinkingTo: 
   Rcpp, 
   RcppArmadillo, 
