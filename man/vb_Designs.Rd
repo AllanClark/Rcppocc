@@ -22,3 +22,21 @@ e.g. Suppose \code{W} contained three dataframes \code{W1}, \code{W2} and \code{
 \details{
 Creates the required 'response' and 'regressor matrices' for \code{PGocc}. Note however that it is suggested that you use \code{PGocc2} instead of \code{PGocc}.
 }
+\examples{
+data("SpatSimData")
+#--------------------------------------------------------------------------
+
+Xmat <- SimTable$Xmat[1:805,] #only use surveyed sites (805)
+colnames(Xmat) #PC1, PC2
+
+Wmat <- list( W1=SimTable$Wmat )
+names(Wmat) #W1
+
+Ysim <- SimTable$Ysim
+
+data_list <- list(W=Wmat, X=Xmat, y=Ysim)
+names(data_list$Y) # V1
+#--------------------------------------------------------------------------
+
+design_mats <- vb_Designs(W=Wmat, X=Xmat, y=Ysim)
+}
