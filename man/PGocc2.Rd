@@ -23,13 +23,7 @@ PGocc2(detection.model, occupancy.model, so.data, prior, control, store_z)
 
   \item{so.data}{An \code{so.data} object containing the observed occupancies, detection covariates, site covariates, and site coordinates. This is created via the \code{\link{make.so.data}}.}
 
-  \item{prior}{A named list that provides the parameter values for the prior distributions. At the current time the elements of the list MUST contain
-  \code{a.tau}, \code{b.tau}, \code{tau}, \code{Q.d}, \code{mu.d}, \code{Q.o} and \code{mu.o}.
-
-  \code{a.tau} and \code{b.tau} are the parameters for the gamma prior on the spatial
-  process parameter in the occupancy model;
-
-  \code{tau} is a starting value for the spatial precision parameter;
+  \item{prior}{A named list that provides the parameter values for the prior distributions. At the current time the elements of the list MUST contain \code{Q.d}, \code{mu.d}, \code{Q.o} and \code{mu.o}.
 
   \code{Q.d} and \code{mu.d} are the prior precision matrix and mean vector for the detection regression effects while \code{Q.o} and \code{mu.o} are similar inputs for the occupancy process.
 
